@@ -13,7 +13,7 @@ mysql_config = {
     'host': 'localhost',
     'user': 'root',  # Change this to your MySQL username
     'password': '',  # Change this to your MySQL password
-    'database': 'test'
+    'database': 'test (1)'
 }
 
 # Function to establish MySQL connection
