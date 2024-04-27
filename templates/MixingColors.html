@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mixing Colors Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 92.2vh;
+            background-color: white;
+            border-left: 25px solid rgb(12, 66, 83);
+            border-right: 25px solid rgb(12, 66, 83);
+            border-top: 25px solid rgb(12, 66, 83);
+            border-bottom: 25px solid rgb(12, 66, 83);
+        }
+
+        .container {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #c1d4f1;
+        }
+
+        .container p {
+            font-size: 27px;
+            margin-top: 35px;
+            margin-left: 65px;
+        }
+
+        .card-container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            padding: 55px;
+            position: relative;
+            /* Added */
+        }
+
+        .card {
+            flex: 1;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 40px;
+            /* Adjusted padding */
+            margin: 4 27px;
+            /* Adjusted margin */
+            background-color: #f0f0f0;
+        }
+
+        .card h3 {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 20px;
+        }
+
+        /* Button styling */
+        .button-container {
+            position: absolute;
+            /* Added */
+            top: 0;
+            /* Added */
+            right: 0;
+            /* Added */
+            display: flex;
+            /* Added */
+            align-items: center;
+            /* Added */
+        }
+
+        .button {
+            padding: 10px 20px;
+            font-size: 18px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #467fd7;
+            /* Dark blue color */
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Adjustments for mobile responsiveness */
+        @media only screen and (max-width: 600px) {
+            .card-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .button-container {
+                position: relative;
+                margin-top: 20px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <p>MIXING COLORS TUTORIAL</p>
+        <p>Follow the steps below and master the stage of mixing colors!</p>
+    </div>
+
+    <div class="card-container">
+        <div class="card" style="background-color: #e44c4c;">
+            <h3>Step 1</h3>
+            <p>You are given a target Color!</p>
+        </div>
+        <div class="card" style="background-color: #467fd7;">
+            <h3>Step 2</h3>
+            <p>Mix colors to obtain the target Color!</p>
+        </div>
+        <div class="card" style="background-color: #5a9641;">
+            <h3>Step 3</h3>
+            <p>Color wheel and Color Palette will be provided to you!
+            </p>
+        </div>
+        <div class="card" style="background-color: #7a60ab;">
+            <h3>Step 4</h3>
+            <p>Get accuracy of 50% to move to next module!</p>
+        </div>
+
+        <!-- Button container -->
+
+        <div class="button-container">
+
+            <button  onclick="runTkinter()" class="button">>></button>
+        </div>
+        <script>
+            function runTkinter() {
+                fetch('/run_tkinter', { method: 'POST' })
+                    .then(response => response.text())
+                    .then(message => alert(message))
+                    .catch(error => console.error('Error:', error));
+            }
+        </script>
+    </div>
+
+</body>
+
+</html>

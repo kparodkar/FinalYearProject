@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Homepage</title>
+</head>
+
+<body>
+    <div class="container">
+        <img style="height: 92.2vh ; margin-right:90px" src="{{ url_for('static', filename='1.jpg') }}" alt="Homepage">
+        <div class="btn-container" style="margin-right:150px;">
+            <h1><span class="blue" style="font-size: 40px;"> WELCOME TO </span><br><span class="pink"
+                    style="margin-bottom:7px;font-size: 40px;"> ARTISTA </span>
+            </h1>
+            <a href="/signup" class="btn" style="text-decoration:none; background-color:#f54c4c">Sign Up</a>
+            <h4><span class="blue">OR</span><br><br><span class="pink">Already Registered ?</span></h4>
+            <a href="/login" class="btn" style="text-decoration:none">Login</a>
+        </div>
+    </div>
+</body>
+
+</html>
