@@ -1,4 +1,4 @@
-import webview
+import webview 
 from flask import Flask, render_template, request, redirect, session
 import mysql.connector
 import threading
@@ -106,7 +106,7 @@ if __name__ == '__main__':
     flask_thread.start()
 
     # Create desktop window with webview and set size
-    webview.create_window("Desktop App", "http://127.0.0.1:5000", width=1000, height=600)
+    webview.create_window("Desktop App", "http://127.0.0.1:5000", fullscreen=True)
 
     # Run webview
     webview.start()
