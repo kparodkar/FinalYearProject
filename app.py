@@ -73,6 +73,18 @@ class ModulesPage:
         else:
             return redirect('/login')
         
+class Learn:
+    @staticmethod
+    def render():
+        return render_template('learn.html')
+class ColorMix:
+    @staticmethod
+    def render():
+         return render_template('mixingcolors.html')  
+class Recreatepaint:
+    @staticmethod
+    def render():
+        return render_template('recreatepainting.html')  
 
 # Route for each page
 @app.route('/')
@@ -96,7 +108,22 @@ def logout():
     session.pop('username', None)
     return redirect('/login')
 
+@app.route('/learn')
+def learn():
+    return Learn.render()
 
+@app.route('/mixingcolors')
+def mixingcolors():
+    return ColorMix.render()  
+
+@app.route('/colormixstages')
+def col_mixstage1():
+    return render_template('colormixstages.html')
+
+@app.route('/recreatepainting')
+def recreatepainting():
+    return render_template('recreatepainting.html')
+                                           
 def run_flask():
     app.run()
 
