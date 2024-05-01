@@ -11,7 +11,6 @@
             margin: 0;
             padding: 0;
             height: 92.2vh;
-
             background-color: white;
             border-left: 25px solid rgb(12, 66, 83);
             border-right: 25px solid rgb(12, 66, 83);
@@ -20,11 +19,9 @@
         }
 
         .container {
-
             border: 1px solid #ccc;
             border-radius: 5px;
             background-color: #c1d4f1;
-
         }
 
         .container p {
@@ -35,23 +32,41 @@
 
         .container1 {
             background-color: white;
+
         }
 
         .button-container {
-            margin-left: 240px;
+            padding-left: 50px;
+            width: 90%;
+            display: flex;
+            justify-content: space-around;
             margin-top: 70px;
+
         }
 
-        .button {
-            display: block;
-            width: 900px;
-            margin-bottom: 25px;
-            padding: 16px 19px;
-            font-size: 18px;
+        .card {
+            width: 350px;
+            height: 200px;
+            padding: 30px;
             border: 1px solid #ccc;
-            border-radius: 15px;
-            background-color: #f0f0f0;
-            cursor: pointer;
+            border-radius: 8px;
+        }
+
+        .card p {
+            font-size: 26px;
+            margin-top: 80px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .red {
+            background-color: #f85353;
+            /* Light red */
+        }
+
+        .green {
+            background-color: #5dc55d;
+            /* Light green */
         }
     </style>
 </head>
@@ -64,12 +79,15 @@
 
     <div class="container1">
         <div class="button-container">
-            <a href="/MixingColors" style="text-decoration: none;"><button class="button"
-                    style="background-color: #f54c4c;">Mixing
-                    Colors</button></a>
-            <button class="button" style="background-color: #5a9641;">Manual Painting</button>
-            <button class="button" style="background-color: #467fd7;">Depth Perception</button>
-            <button class="button" style="background-color: #7a60ab;">Choosing Brushes</button>
+            <a href="/mixingcolors" style="text-decoration:none; color:black">
+                <div class="card red">
+                    <p>Mixing Colors</p>
+                </div>
+            </a>
+            <a href="/recreatepainting" style="text-decoration:none; color:black">
+            <div class="card green">
+                <p>Recreate Painting</p>
+            </div></a>
         </div>
     </div>
 </body>

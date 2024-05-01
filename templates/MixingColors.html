@@ -32,31 +32,46 @@
 
         .card-container {
             display: flex;
+            flex-direction: column;
+            /* Changed to column */
             justify-content: space-around;
-            margin-top: 20px;
+            margin-top: 0px;
             padding: 55px;
             position: relative;
+            height: 50%;
+            padding-left: 340px;
+            width: 65%;
             /* Added */
         }
 
         .card {
             flex: 1;
+            margin-top: 0px;
+            margin-bottom: 15px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            padding: 40px;
+            padding-bottom: 40px;
             /* Adjusted padding */
             margin: 4 27px;
             /* Adjusted margin */
             background-color: #f0f0f0;
+            width: 70%;
+            border-radius: 20px;
+            height: 20px;
+            position: relative;
         }
 
         .card h3 {
+            margin-top: 25px;
             font-size: 30px;
             margin-bottom: 10px;
+            text-align: center;
         }
 
         .card p {
             font-size: 20px;
+            text-align: center;
+            color: black;
         }
 
         /* Button styling */
@@ -73,6 +88,10 @@
             /* Added */
         }
 
+        .popup p {
+            color: rgb(7, 7, 7)
+        }
+
         .button {
             padding: 10px 20px;
             font-size: 18px;
@@ -82,6 +101,35 @@
             /* Dark blue color */
             color: white;
             cursor: pointer;
+        }
+
+        /* Popup styling */
+        .popup {
+            /* Existing CSS */
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50%;
+            height: 20%;
+            background-color: grey;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+
+        /* Lock icon styling */
+        .lock-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            color: #999;
+            /* Lock icon color */
         }
 
         /* Adjustments for mobile responsiveness */
@@ -102,44 +150,131 @@
 
 <body>
     <div class="container">
-        <p>MIXING COLORS TUTORIAL</p>
-        <p>Follow the steps below and master the stage of mixing colors!</p>
+        <p>MIXING COLORS STAGES</p>
+        <p style="font-size:25px; font-style:italic">Start with the first level and complete each level of this module
+            with score of 75%
+            and unlock the next
+            level! <br>Complete all 3 levels and master the stage of mixing colors!</p>
     </div>
 
     <div class="card-container">
-        <div class="card" style="background-color: #e44c4c;">
-            <h3>Step 1</h3>
-            <p>You are given a target Color!</p>
+        <div class="card" style="background-color:rgb(247, 169, 24)" onmouseover="showPopup(1)"
+            onmouseout="hidePopup(1)">
+            <span class="lock-icon" style="padding-left:200px">&#x1F512;</span>
+            <h3 style="font-style:italic">Level 1</h3>
         </div>
-        <div class="card" style="background-color: #467fd7;">
-            <h3>Step 2</h3>
-            <p>Mix colors to obtain the target Color!</p>
+        <div class="card" style="background-color:rgb(196, 88, 106)">
+            <span class="lock-icon" style="padding-left:200px">&#x1F512;</span>
+            <h3 style="font-style:italic">Level 2</h3>
         </div>
-        <div class="card" style="background-color: #5a9641;">
-            <h3>Step 3</h3>
-            <p>Color wheel and Color Palette will be provided to you!
-            </p>
+        <div class=" card" style="background-color: rgb(80, 184, 70)">
+            <span class="lock-icon" style="padding-left:200px">&#x1F512;</span>
+            <h3 style="font-style:italic">Level 3</h3>
         </div>
-        <div class="card" style="background-color: #7a60ab;">
-            <h3>Step 4</h3>
-            <p>Get accuracy of 50% to move to next module!</p>
-        </div>
-
-        <!-- Button container -->
-
-        <div class="button-container">
-
-            <button  onclick="runTkinter()" class="button">>></button>
-        </div>
-        <script>
-            function runTkinter() {
-                fetch('/run_tkinter', { method: 'POST' })
-                    .then(response => response.text())
-                    .then(message => alert(message))
-                    .catch(error => console.error('Error:', error));
-            }
-        </script>
     </div>
+
+    <!-- Popup for Level 1 -->
+    <div id="popup1" class="popup" style="z-index: 999;">
+        <p id="step1">1. You will be provided with color palette and a target color.</p>
+        <p id="step2" style="display:none">2.Your aim is to match the target color using color palette and a slider.</p>
+        <p id="step3" style="display:none">3.Make sure the similarity score is 75% or above.</p>
+        <button id="nextButton" onclick="nextStep(1)">Next</button>
+    </div>
+
+    <!-- Popup for Level 2 -->
+    <div id="popup2" class="popup" style="display:none; z-index: 999;">
+        <p id="step1_2">2.Your aim is to match the target color</p>
+        <button id="nextButton2" onclick="nextStep(2)">Next</button>
+    </div>
+
+    <!-- Popup for Level 3 -->
+    <div id="popup3" class="popup" style="display:none; z-index: 999;">
+        <p id="step1_3">3.Make sure the similarity score is 75% or above.</p>
+        <button id="nextButton3" onclick="nextStep(3)">Next</button>
+    </div>
+
+    <!-- Popup for "ARE YOU READY" -->
+    <div id="readyPopup" class="popup" style="display:none; z-index: 999;">
+        <p>ARE YOU READY?</p>
+        <button onclick="confirmReady(true)">Yes</button>
+        <button onclick="confirmReady(false)">No</button>
+    </div>
+
+    <!-- Final Confirmation Popup -->
+    <div id="finalPopup" class="popup" style="display:none; z-index: 999;">
+        <p id="unlockText" style="font-size: 35px;">Level 1 unlocked</p>
+        <span class="lock-icon" id="unlockIcon"
+            style="font-size: 48px; color: #999; margin-left:175px ;margin-top:-10px">&#x1F513;</span>
+    </div>
+
+    <!-- Script to show and hide popups -->
+    <!-- Script to show and hide popups -->
+    <script>
+        function showPopup(level) {
+            document.getElementById('popup' + level).style.display = 'block';
+        }
+
+        function hidePopup(level) {
+            document.getElementById('popup' + level).style.display = 'none';
+        }
+
+        function nextStep(level) {
+            var step1 = document.getElementById('step1');
+            var step2 = document.getElementById('step2');
+            var step3 = document.getElementById('step3');
+
+            var nextButton = document.getElementById('nextButton');
+            var nextButton2 = document.getElementById('nextButton2');
+            var nextButton3 = document.getElementById('nextButton3');
+
+            if (level === 1) {
+                step1.style.display = 'none';
+                step2.style.display = 'block';
+                nextButton.style.display = 'none';
+
+                document.getElementById('popup2').style.display = 'block';
+            } else if (level === 2) {
+                step2.style.display = 'none';
+                step3.style.display = 'block';
+                nextButton2.style.display = 'none';
+
+                document.getElementById('popup3').style.display = 'block';
+            } else if (level === 3) {
+                step3.style.display = 'none';
+                document.getElementById('readyPopup').style.display = 'block';
+            }
+        }
+
+        function confirmReady(choice) {
+            if (choice) {
+                // Show "Level 1 unlocked" text
+                document.getElementById('unlockText').innerText = 'LEVEL 1 UNLOCKED';
+
+                // Show unlock icon for 2 seconds
+                document.getElementById('finalPopup').style.display = 'block';
+
+                // Hide the final popup after 2 seconds
+                setTimeout(function () {
+                    document.getElementById('finalPopup').style.display = 'none';
+                    // Redirect to the next page here
+                    window.location.href = "/colormixstages"; // Replace 'next_page.html' with the actual URL of the next page
+                }, 1000);
+            } else {
+                // Reset popup to step 1
+                document.getElementById('popup1').style.display = 'block';
+                document.getElementById('popup2').style.display = 'none';
+                document.getElementById('popup3').style.display = 'none';
+                document.getElementById('readyPopup').style.display = 'none';
+                document.getElementById('step1').style.display = 'block';
+                document.getElementById('step2').style.display = 'none';
+                document.getElementById('step3').style.display = 'none';
+                document.getElementById('nextButton').style.display = 'block';
+                document.getElementById('nextButton2').style.display = 'block';
+                document.getElementById('nextButton3').style.display = 'block';
+            }
+        }
+    </script>
+
 
 </body>
 
