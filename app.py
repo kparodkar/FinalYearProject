@@ -123,7 +123,16 @@ def col_mixstage1():
 @app.route('/recreatepainting')
 def recreatepainting():
     return render_template('recreatepainting.html')
-                                           
+ 
+@app.route('/stage2_colormixing')
+def stage2_colormixing():
+    return render_template('stage2_colormixing.html')    
+
+
+@app.route('/stage2colmix')
+def stage2colmix():
+    return render_template('stage2colmix.html') 
+                           
 def run_flask():
     app.run()
 
