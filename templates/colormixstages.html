@@ -178,9 +178,9 @@
                     alert("Congratulations, you have unlocked the next level!");
                     window.location.href="/mixingcolors";
                     <div id="popup1" class="popup" style="z-index: 999;">
-                        <p id="step1">1.You will be provided with color palette and a target color, but not a slider</p>
-                        <p id="step2" style="display:none">2.You have to mix two pure colors,first color chosen will be displayed in first canvas, and second time chosen will be displayed in second canvas and your aim is to match the target color.</p>
-                        <p id="step3" style="display:none">4.Make sure the similarity score is 75% or above.</p>
+                        <p id="step1">1. You will be provided with color palette and a target color.</p>
+                        <p id="step2" style="display:none">2.Your aim is to match the target color using color palette and a slider.</p>
+                        <p id="step3" style="display:none">3.Make sure the similarity score is 75% or above.</p>
                         <button id="nextButton" onclick="nextStep(1)">Next</button>
                     </div>
                 }, 2000);
@@ -266,8 +266,6 @@
         var randomIndex = Math.floor(Math.random() * colors.length);
         var randomColor = colors[randomIndex];
         document.getElementById('colorBox').style.backgroundColor = randomColor;
-
-        
     </script>
 </body>
 </html>
