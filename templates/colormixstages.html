@@ -156,22 +156,53 @@
             // Convert RGB to Lab color space
             var randomLab = rgbToLab(randomColor);
             var selectedLab = rgbToLab(selectedColor);
-
+        
             // Calculate the Euclidean distance between LAB color coordinates
             var delta_l = selectedLab[0] - randomLab[0];
             var delta_a = selectedLab[1] - randomLab[1];
             var delta_b = selectedLab[2] - randomLab[2];
             var color_distance = Math.sqrt(delta_l ** 2 + delta_a ** 2 + delta_b ** 2);
-
+        
             // Calculate color similarity percentage
             var max_distance = Math.sqrt(100 ** 2 + 100 ** 2 + 100 ** 2); // Maximum possible distance in LAB color space
             var similarity_percentage = ((max_distance - color_distance) / max_distance) * 100;
-
+        
             // Display the similarity score
             document.getElementById('similarityResult').innerText = 'Similarity Score: ' + similarity_percentage.toFixed(2) + '%';
             document.getElementById('similarityResult').style.display = 'block';
+        
+            // Check if similarity score is above 75
+            if (similarity_percentage >= 75) {
+                // Display Congratulations popup after 2 seconds
+                setTimeout(function() {
+                    alert("Congratulations, you have unlocked the next level!");
+                    window.location.href="/mixingcolors";
+                }, 2000);
+              
+            } else {
+                // Display Try again popup
+                alert("Try again, you have not passed");
+        
+                // Clear the score
+                document.getElementById('similarityResult').style.display = 'none';
+                // Reset the page
+                resetPage();
+            }
         }
-
+        
+        function resetPage() {
+            // Hide the color popup
+            document.getElementById('colorPopup').style.display = 'none';
+        
+            // Clear selected color
+            document.getElementById('selectedColor').style.backgroundColor = '';
+        
+            // Reset similarityCalculated flag
+            similarityCalculated = false;
+            checkSimilarity();
+        }
+        
+        
         function rgbToHex(rgb) {
             // Convert RGB color to Hex color
             var rgbArr = rgb.match(/\d+/g);
