@@ -213,7 +213,7 @@
 
             return [L, a, b];
         }
-
+ 
         // Close the popup when clicking outside of it
         window.onclick = function(event) {
             var popup = document.getElementById('colorPopup');
@@ -221,14 +221,14 @@
                 popup.style.display = 'none';
             }
         }
-
+ 
         // Set the provided colors for random generation
         var colors = ['#d92809', '#e65512', '#ad6f03', '#56d62b', '#64babd', '#071a4a', '#cf51af'];
-
+ 
         // Set the random color when the page loads
         var randomIndex = Math.floor(Math.random() * colors.length);
         var randomColor = colors[randomIndex];
         document.getElementById('colorBox').style.backgroundColor = randomColor;
-    </script>
+    </script> 
 </body>
 </html>
