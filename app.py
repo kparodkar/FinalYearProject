@@ -3,12 +3,11 @@ from flask import Flask, render_template, request, redirect, session
 import mysql.connector
 import threading
 import secrets
-#comment
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
 
-# MySQL Configuration
+# MySQL Configurationm
 mysql_config = {
     'host': 'localhost',
     'user': 'root',  # Change this to your MySQL username
@@ -123,7 +122,16 @@ def col_mixstage1():
 @app.route('/recreatepainting')
 def recreatepainting():
     return render_template('recreatepainting.html')
-                                           
+ 
+@app.route('/stage2_colormixing')
+def stage2_colormixing():
+    return render_template('stage2_colormixing.html')    
+
+
+@app.route('/stage2colmix')
+def stage2colmix():
+    return render_template('stage2colmix.html') 
+                           
 def run_flask():
     app.run()
 
