@@ -3,12 +3,12 @@ from flask import Flask, render_template, request, redirect, session
 import mysql.connector
 import threading
 import secrets
-
-
+ 
+ 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
 
-# MySQL Configuration
+# MySQL Configurationm
 mysql_config = {
     'host': 'localhost',
     'user': 'root',  # Change this to your MySQL username
