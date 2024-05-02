@@ -3,8 +3,7 @@ from flask import Flask, render_template, request, redirect, session
 import mysql.connector
 import threading
 import secrets
- 
- 
+
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
 
@@ -13,7 +12,7 @@ mysql_config = {
     'host': 'localhost',
     'user': 'root',  # Change this to your MySQL username
     'password': '',  # Change this to your MySQL password
-    'database': 'test (1)'
+    'database': 'test'
 }
 
 # Function to establish MySQL connection
