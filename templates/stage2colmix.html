@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Chooser App</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0; /* Set body margin to 0 */
+            overflow: hidden; /* Prevent scrolling */
+        }
+        .canvas-container {
+            margin-bottom: 20px;
+        }
+        .color-palette-button {
+            width: 30px;
+            height: 30px;
+            margin: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        #randomColorCanvas {
+            margin-bottom: 20px;
+            margin-top:20px;
+        }
+        #container {
+            padding-top: -5px; /* Adjusted margin to move the color palette up */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        /* Add styles for the color palette */
+        .color-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        .palette {
+            width: 300px;
+            height: 150px;
+            border-radius: 20px;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            margin-top:40px;
+        }
+        #buttonContainer {
+            display: flex;
+            justify-content: center;
+            margin-top: -115px; /* Adjusted margin to move the buttons down */
+        }
+        
+        #mixButton, #checkSimilarityButton {
+            margin-bottom: 20px; /* Adjusted the margin */
+            margin-left: 5px; /* Added margin to separate buttons */
+            margin-right: 5px; /* Added margin to separate buttons */
+        }
+    </style>
+</head>
+<body>
+<div id="container">
+    <!-- Add the color palette here -->
+    <div id="colorPalette" class="palette">
+        <!-- Loop through the colors and create circles -->
+        <div class="color-circle" style="background-color: #FFB6C1;" onclick="setColor('#FFB6C1')"></div>
+        <div class="color-circle" style="background-color: #006400;" onclick="setColor('#006400')"></div>
+        <div class="color-circle" style="background-color: #ED7014;" onclick="setColor('#ED7014')"></div>
+        <div class="color-circle" style="background-color: #A020F0;" onclick="setColor('#A020F0')"></div>
+        <div class="color-circle" style="background-color: #FF0000;" onclick="setColor('#FF0000')"></div>
+        <div class="color-circle" style="background-color: #FFE5B4;" onclick="setColor('#FFE5B4')"></div>
+        <div class="color-circle" style="background-color: #FFFF00;" onclick="setColor('#FFFF00')"></div>
+        <div class="color-circle" style="background-color: #90EE90;" onclick="setColor('#90EE90')"></div>
+        <div class="color-circle" style="background-color: #00008B;" onclick="setColor('#00008B')"></div>
+        <div class="color-circle" style="background-color: #ADD8E6;" onclick="setColor('#ADD8E6')"></div>
+        <div class="color-circle" style="background-color: #964B00;" onclick="setColor('#964B00')"></div>
+        <div class="color-circle" style="background-color: #000000;" onclick="setColor('#000000')"></div>
+    </div>
+    <canvas id="randomColorCanvas" width="400" height="50"></canvas>
+    <div class="canvas-container">
+        <canvas id="colorCanvas" width="400" height="400"></canvas>
+    </div>
+    <div id="buttonContainer">
+        <button id="mixButton" onclick="mixColors()">Mix the colors</button>
+        <button id="checkSimilarityButton" onclick="checkSimilarity()">Check Similarity</button>
+    </div>
+    
+</div>
+
+<script>
+    var color1 = null;
+    var color2 = null;
+    var mixedColor = null;
+
+    var colorCanvas = document.getElementById('colorCanvas');
+    var ctx = colorCanvas.getContext('2d');
+
+    var randomColorCanvas = document.getElementById('randomColorCanvas');
+    var randomCtx = randomColorCanvas.getContext('2d');
+
+    function mixColors() {
+        if (color1 !== null && color2 !== null) {
+            mixedColor = calculateMixedColor();
+            drawMixedColor();
+        }
+    }
+
+    function calculateMixedColor() {
+        // Check if color strings are empty
+        if (!color1 || !color2) {
+            return "#FFFFFF";  // Return white if either color is not provided
+        }
+
+        // Convert percentages to ratios
+        var totalPercent = 50 + 50; // Assuming equal percentage for both colors
+        var ratio1 = 50 / totalPercent;
+        var ratio2 = 50 / totalPercent;
+
+        // Extract RGB values from color strings
+        var r1 = parseInt(color1.substring(1, 3), 16);
+        var g1 = parseInt(color1.substring(3, 5), 16);
+        var b1 = parseInt(color1.substring(5, 7), 16);
+
+        var r2 = parseInt(color2.substring(1, 3), 16);
+        var g2 = parseInt(color2.substring(3, 5), 16);
+        var b2 = parseInt(color2.substring(5, 7), 16);
+
+        // Interpolate RGB values based on the ratios
+        var r = Math.floor(r1 * ratio1 + r2 * ratio2);
+        var g = Math.floor(g1 * ratio1 + g2 * ratio2);
+        var b = Math.floor(b1 * ratio1 + b2 * ratio2);
+
+        // Convert interpolated RGB values to hexadecimal format
+        return '#' + r.toString(16).padStart(2, '0') + g.toString(16).padStart(2, '0') + b.toString(16).padStart(2, '0');
+    }
+
+    function drawMixedColor() {
+        ctx.clearRect(0, 0, colorCanvas.width, colorCanvas.height);
+        ctx.fillStyle = color1 || '#FFFFFF';
+        ctx.fillRect(50, 50, 100, 100);
+        ctx.fillStyle = color2 || '#FFFFFF';
+        ctx.fillRect(250, 50, 100, 100);
+        ctx.fillStyle = mixedColor;
+        ctx.fillRect(100, 200, 200, 100);
+    }
+
+    function setColor(color) {
+        if (color1 === null) {
+            color1 = color;
+        } else if (color2 === null) {
+            color2 = color;
+        } else {
+            color1 = color;
+            color2 = null;
+        }
+        drawColors();
+    }
+
+    function drawColors() {
+        ctx.clearRect(0, 0, colorCanvas.width, colorCanvas.height);
+        ctx.fillStyle = color1 || '#FFFFFF';
+        ctx.fillRect(50, 50, 100, 100);
+        ctx.fillStyle = color2 || '#FFFFFF';
+        ctx.fillRect(250, 50, 100, 100);
+    }
+
+    function displayRandomColors() {
+        var randomColors = ['#A020F0', '#0D98BA', '#adff2f'];
+        var randomColor = randomColors[Math.floor(Math.random() * randomColors.length)];
+        randomCtx.fillStyle = randomColor;
+        randomCtx.fillRect(150, 10, 100, 40);
+    }
+
+    displayRandomColors();
+
+    function checkSimilarity() {
+        // Ensure mixedColor is initialized
+        if (!mixedColor) {
+            alert("Please mix colors first.");
+            return;
+        }
+        // Get the randomly generated color
+        var randomColor = document.getElementById('randomColorCanvas').style.backgroundColor;
+        // Convert the mixed color to hex format
+        var randomColorHex= rgbToHex(randomColor);
+        var mixedColorHex = rgbToHex(mixedColor);
+        // Call the function to calculate similarity score
+        calculateSimilarity(mixedColorHex, randomColorHex);
+    }
+    
+
+    function calculateSimilarity(mixedColor, randomColor) {
+        // Convert RGB to Lab color space
+        var mixedLab = rgbToLab(mixedColor);
+        var randomLab = rgbToLab(randomColor);
+    
+        // Calculate the Euclidean distance between LAB color coordinates
+        var delta_l = mixedLab[0] - randomLab[0];
+        var delta_a = mixedLab[1] - randomLab[1];
+        var delta_b = mixedLab[2] - randomLab[2];
+        var color_distance = Math.sqrt(delta_l ** 2 + delta_a ** 2 + delta_b ** 2);
+    
+        // Calculate color similarity percentage
+        var max_distance = Math.sqrt(100 ** 2 + 100 ** 2 + 100 ** 2); // Maximum possible distance in LAB color space
+        var similarity_percentage = ((max_distance - color_distance) / max_distance) * 100;
+    
+        // Display the similarity score
+        alert('Similarity Score: ' + similarity_percentage.toFixed(2) + '%');
+    }
+
+    function rgbToHex(rgb) {
+        // Convert RGB color to Hex color
+        var rgbArr = rgb.match(/\d+/g);
+        var hex = "#" + ((1 << 24) + (parseInt(rgbArr[0]) << 16) + (parseInt(rgbArr[1]) << 8) + parseInt(rgbArr[2])).toString(16).slice(1);
+        return hex;
+    }
+
+    function rgbToLab(rgb) {
+        // Convert RGB color to Lab color
+        var r = parseInt(rgb.slice(1, 3), 16) / 255;
+        var g = parseInt(rgb.slice(3, 5), 16) / 255;
+        var b = parseInt(rgb.slice(5, 7), 16) / 255;
+
+        // Convert to XYZ color space
+        r = r > 0.04045 ? Math.pow((r + 0.055) / 1.055, 2.4) : r / 12.92;
+        g = g > 0.04045 ? Math.pow((g + 0.055) / 1.055, 2.4) : g / 12.92;
+        b = b > 0.04045 ? Math.pow((b + 0.055) / 1.055, 2.4) : b / 12.92;
+
+        r *= 100;
+        g *= 100;
+        b *= 100;
+
+        var x = r * 0.4124 + g * 0.3576 + b * 0.1805;
+        var y = r * 0.2126 + g * 0.7152 + b * 0.0722;
+        var z = r * 0.0193 + g * 0.1192 + b * 0.9505;
+
+        // Convert to Lab color space
+        x /= 95.047;
+        y /= 100.000;
+        z /= 108.883;
+
+        x = x > 0.008856 ? Math.pow(x, 1 / 3) : 7.787 * x + 16 / 116;
+        y = y > 0.008856 ? Math.pow(y, 1 / 3) : 7.787 * y + 16 / 116;
+        z = z > 0.008856 ? Math.pow(z, 1 / 3) : 7.787 * z + 16 / 116;
+
+        var L = 116 * y - 16;
+        var a = 500 * (x - y);
+        var b = 200 * (y - z);
+
+        return [L, a, b];
+    }
+</script>
+</body>
+</html>
