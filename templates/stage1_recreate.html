@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>White Canvas</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center; /* Center content horizontally */
+            align-items: center; /* Center content vertically */
+            height: 100vh;
+            background-color: #f0f0f0; /* Light gray background */
+        }
+        
+        #container {
+            display: flex;
+            align-items: center;
+        }
+        #container1 {
+            display: flex;
+            align-items: center;
+            margin-left:-150px;
+        }
+        canvas {
+            background-color: white;
+            border: 5px solid #8B4513; /* Brown border */
+            border-radius: 9px; /* Rounded corners */
+            box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.2); /* Shadow effect */
+            margin-top: 40px; /* Move the canvas down */
+            margin-right:10px; /* Add some space between canvas and images */
+        }
+
+        img {
+            width: 350px;
+            height: auto;
+            border: 2px solid black; /* Border around the images */
+            margin-right:320px;
+            margin-top:30px;
+            cursor: pointer; /* Change cursor to pointer on hover */
+        }
+    </style>
+</head>
+<body>
+   
+<div id="container">
+    <img id="imageDisplay" onclick="changeImage()" src="{{ url_for('static', filename='bananaa.jpg') }}" style="cursor: pointer;padding-left:-60px"></div>
+   <div id="container1"> <canvas id="whiteCanvas" width="400" height="400"></canvas>
+</div>
+
+<script>
+    // Array to store image paths
+    var images = ['bananaa.jpg', 'scenery.jpg', 'redapplenice.jpg'];
+
+    // Get the index of the last displayed image from local storage
+    var lastImageIndex = localStorage.getItem('lastImageIndex');
+    var currentIndex = lastImageIndex ? parseInt(lastImageIndex) : 0;
+
+    // Function to change the displayed image on canvas
+    function changeImage() {
+        var canvas = document.getElementById('whiteCanvas');
+        var ctx = canvas.getContext('2d');
+        var img = new Image();
+        img.onload = function() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        }
+        img.src = images[currentIndex];
+
+        // Increment the index for the next image
+        currentIndex = (currentIndex + 1) % images.length;
+
+        // Store the current image index in local storage for persistence
+        localStorage.setItem('lastImageIndex', currentIndex);
+    }
+
+    // Display the first image initially
+    // changeImage(); // Uncomment this line if you want the first image to be displayed initially
+</script>
+
+</body>
+</html>

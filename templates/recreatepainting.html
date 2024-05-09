@@ -149,15 +149,12 @@
 
 <body>
     <div class="container">
-        <p>MIXING COLORS STAGES</p>
-        <p style="font-size:25px; font-style:italic">Start with the first level and complete each level of this module
-            with score of 75%
-            and unlock the next
-            level! <br>Complete all 3 levels and master the stage of mixing colors!</p>
+        <p>RECREATE PAINTING STAGES</p>
+        <p style="font-size:25px; font-style:italic">Recreate painting by correctly picking colors and making the painting look realistic and complete both the levels of this module by securing the score of 75% or more.</p>
     </div>
 
     <div class="card-container">
-        <div class="card" style="background-color:rgb(247, 169, 24)" onmouseover="showPopup(1)"
+        <div class="card" style="background-color:rgb(247, 169, 24)" onclick="redirectToStage1()" onmouseover="showPopup(1)"
             onmouseout="hidePopup(1)">
             <span class="lock-icon" style="padding-left:200px">&#x1F512;</span>
             <h3 style="font-style:italic">Level 1</h3>
@@ -169,12 +166,12 @@
     </div>
 
     <!-- Popup for Level 1 -->
-    <div id="popup1" class="popup" style="z-index: 999;">
+    <!--<div id="popup1" class="popup" style="z-index: 999;">
         <p id="step1">1. You will be provided with color palette and a target color.</p>
         <p id="step2" style="display:none">2.Your aim is to match the target color using color palette and a slider.</p>
         <p id="step3" style="display:none">3.Make sure the similarity score is 75% or above.</p>
         <button id="nextButton" onclick="nextStep(1)">Next</button>
-    </div>
+    </div>-->
 
     <!-- Popup for Level 2 -->
     <div id="popup2" class="popup" style="display:none; z-index: 999;">
@@ -198,6 +195,12 @@
 
     <!-- Script to show and hide popups -->
     <script>
+        
+            function redirectToStage1() {
+                window.location.href = "/stage1_recreate";
+            }
+        
+        
         function showPopup(level) {
             document.getElementById('popup' + level).style.display = 'block';
         }

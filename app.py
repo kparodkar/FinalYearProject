@@ -131,6 +131,10 @@ def stage2_colormixing():
 @app.route('/stage2colmix')
 def stage2colmix():
     return render_template('stage2colmix.html') 
+       
+@app.route('/stage1_recreate')
+def stage1_recreate():
+    return render_template('stage1_recreate.html') 
                            
 def run_flask():
     app.run()
