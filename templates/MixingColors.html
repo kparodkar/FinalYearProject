@@ -167,7 +167,7 @@
             <span class="lock-icon" style="padding-left:200px">&#x1F512;</span>
             <h3 style="font-style:italic">Level 2</h3>
         </div>
-        <div class=" card" style="background-color: rgb(80, 184, 70)">
+        <div class=" card" style="background-color: rgb(80, 184, 70)" onclick="direct()"> 
             <span class="lock-icon" style="padding-left:200px">&#x1F512;</span>
             <h3 style="font-style:italic">Level 3</h3>
         </div>
@@ -272,6 +272,9 @@
                 document.getElementById('nextButton2').style.display = 'block';
                 document.getElementById('nextButton3').style.display = 'block';
             }
+        }
+        function direct(){
+            window.location.href="/stage3_learnpaint"
         }
     </script>
 

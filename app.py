@@ -139,7 +139,7 @@ def stage1_recreate():
 @app.route('/stage3_learnpaint')
 def stage3_learnpaint():
     return render_template('stage3_learnpaint.html') 
-                                               
+                                              
 def run_flask():
     app.run()
 
