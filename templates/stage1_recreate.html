@@ -3,83 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>White Canvas</title>
+    <title>Interactive Canvas</title>
     <style>
         body {
             margin: 0;
             padding: 0;
             display: flex;
-            justify-content: center; /* Center content horizontally */
-            align-items: center; /* Center content vertically */
+            justify-content: center;
+            align-items: center;
             height: 100vh;
-            background-color: #f0f0f0; /* Light gray background */
+            background-color: #f0f0f0;
         }
-        
+
         #container {
             display: flex;
             align-items: center;
-            margin-left:-250px;
         }
-        #container1 {
+
+        #images-container {
             display: flex;
-            align-items: center;
-            margin-left:-250px;
+            flex-direction: column;
+            margin-right: 300px; /* Space between images and canvas */
+            margin-left: -80px;
+            margin-top:30px;
         }
+
+        #canvas-container {
+            position: relative;
+            margin-left: -260px;
+            
+        }
+
         canvas {
             background-color: white;
-            border: 5px solid #8B4513; /* Brown border */
-            border-radius: 9px; /* Rounded corners */
-            box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.2); /* Shadow effect */
-            margin-top: 40px; /* Move the canvas down */
-            margin-right:10px; /* Add some space between canvas and images */
+            border: 5px solid #8B4513;
+            border-radius: 9px;
+            box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.2);
+            padding-right: -30px;
         }
 
         img {
             width: 350px;
             height: auto;
-            border: 2px solid black; /* Border around the images */
-            margin-right:320px;
-            margin-top:30px;
-            cursor: pointer; /* Change cursor to pointer on hover */
+            border: 2px solid black;
+            cursor: pointer;
+            margin-bottom: 45px; /* Add margin between images */
+            
+        }
+
+        .palette {
+            display: flex;
+            flex-wrap: wrap;
+            width: 100px;
+            margin: 40px 0 0 10px;
+        }
+
+        .color {
+            width: 30px;
+            height: 30px;
+            margin: 5px;
+            cursor: pointer;
+            border: 1px solid #000;
+            border-radius: 3px;
+        }
+
+        .brush {
+            margin-top: 20px;
+            cursor: pointer;
+            border: 1px solid #000;
+            padding: 5px;
+            text-align: center;
+            background-color: #ddd;
         }
     </style>
 </head>
 <body>
-   
-<div id="container">
-    <img id="imageDisplay" onclick="changeImage()" src="{{ url_for('static', filename='bananaa.jpg') }}" style="cursor: pointer;padding-left:-60px"></div>
-   <div id="container1"> <canvas id="whiteCanvas" width="400" height="400"></canvas>
-</div>
+    <div id="container">
+        <div id="images-container">
+            <img id="imageDisplayOriginal" onclick="changeImage()" src="{{ url_for('static', filename='bananaa.jpg') }}">
+            <img id="imageDisplaySegmented" onclick="changeImage()" src="{{ url_for('static', filename='banana_segmented.png') }}">
+        </div>
+        <div id="canvas-container">
+            <canvas id="whiteCanvas" width="500" height="400"></canvas>
+        </div>
+    </div>
+    <div class="palette" id="colorPalette">
+        <!-- Color palette will be generated dynamically -->
+    </div>
+    <div class="brush" id="brush">
+        Brush
+    </div>
 
-<script>
-    // Array to store image paths
-    var images = ['bananaa.jpg', 'scenery.jpg', 'redapplenice.jpg'];
+    <script>
+        // Array to store image paths
+        var images = ['banana_original.png', 'banana_segmented.png'];
 
-    // Get the index of the last displayed image from local storage
-    var lastImageIndex = localStorage.getItem('lastImageIndex');
-    var currentIndex = lastImageIndex ? parseInt(lastImageIndex) : 0;
+        // Get the index of the last displayed image from local storage
+        var lastImageIndex = localStorage.getItem('lastImageIndex');
+        var currentIndex = lastImageIndex ? parseInt(lastImageIndex) : 0;
 
-    // Function to change the displayed image on canvas
-    function changeImage() {
+        // Function to change the displayed image on canvas
+        function changeImage() {
+            var canvas = document.getElementById('whiteCanvas');
+            var ctx = canvas.getContext('2d');
+            var img = new Image();
+            img.onload = function() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            }
+            img.src = images[currentIndex];
+
+            // Increment the index for the next image
+            currentIndex = (currentIndex + 1) % images.length;
+
+            // Store the current image index in local storage for persistence
+            localStorage.setItem('lastImageIndex', currentIndex);
+        }
+
+        // Set up the painting functionality
         var canvas = document.getElementById('whiteCanvas');
         var ctx = canvas.getContext('2d');
-        var img = new Image();
-        img.onload = function() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        var painting = false;
+        var color = '#000000';
+        var brushSize = 5;
+
+        function startPosition(e) {
+            painting = true;
+            draw(e);
         }
-        img.src = images[currentIndex];
 
-        // Increment the index for the next image
-        currentIndex = (currentIndex + 1) % images.length;
+        function endPosition() {
+            painting = false;
+            ctx.beginPath();
+        }
 
-        // Store the current image index in local storage for persistence
-        localStorage.setItem('lastImageIndex', currentIndex);
-    }
+        function draw(e) {
+            if (!painting) return;
+            ctx.lineWidth = brushSize;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = color;
 
-    // Display the first image initially
-    // changeImage(); // Uncomment this line if you want the first image to be displayed initially
-</script>
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
 
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+
+        canvas.addEventListener('mousedown', startPosition);
+        canvas.addEventListener('mouseup', endPosition);
+        canvas.addEventListener('mousemove', draw);
+
+        // Load the sketchgrid_banana image onto the canvas when the page loads
+        window.onload = function() {
+            var canvas = document.getElementById('whiteCanvas');
+            var ctx = canvas.getContext('2d');
+            var img = new Image();
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            }
+            img.src = "{{ url_for('static', filename='sketchgrid_banana.png') }}";
+        };
+
+        // Color palette functionality
+        var colors = ['#FF5733', '#33FF57', '#5733FF', '#FFD133', '#33FFF5', '#F533FF', '#33FFAA', '#AA33FF', '#FFAA33', '#AAFF33', '#33FF57', '#5733FF'];
+        var palette = document.getElementById('colorPalette');
+
+        colors.forEach(function(col) {
+            var colorDiv = document.createElement('div');
+            colorDiv.className = 'color';
+            colorDiv.style.backgroundColor = col;
+            colorDiv.onclick = function() {
+                color = col;
+            };
+            palette.appendChild(colorDiv);
+        });
+
+        // Brush functionality
+        var brushDiv = document.getElementById('brush');
+        brushDiv.onclick = function() {
+            brushSize = (brushSize === 5) ? 10 : 5;
+            brushDiv.innerText = (brushSize === 5) ? 'Brush' : 'Flat Brush';
+        }
+
+        // Display the first image initially
+        // changeImage(); // Uncomment this line if you want the first image to be displayed initially
+    </script>
 </body>
 </html>
