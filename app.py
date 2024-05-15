@@ -18,7 +18,7 @@ mysql_config = {
 # Function to establish MySQL connection
 def get_mysql_connection():
     return mysql.connector.connect(**mysql_config)
-
+#classes
 # Define classes for each page
 class StartPage:
     @staticmethod
