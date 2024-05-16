@@ -18,7 +18,7 @@ mysql_config = {
 # Function to establish MySQL connection
 def get_mysql_connection():
     return mysql.connector.connect(**mysql_config)
-
+#classes
 # Define classes for each page
 class StartPage:
     @staticmethod
@@ -139,7 +139,23 @@ def stage1_recreate():
 @app.route('/stage3_learnpaint')
 def stage3_learnpaint():
     return render_template('stage3_learnpaint.html') 
-                                              
+
+from flask import Flask, render_template, request, jsonify
+from PIL import Image
+import os
+import base64
+from io import BytesIO
+
+
+
+@app.route('/save', methods=['POST'])
+def save():
+    data = request.json['imageData']
+    image_data = base64.b64decode(data.split(',')[1])
+    image = Image.open(BytesIO(image_data))
+    save_path = os.path.join('static', 'image.png')
+    image.save(save_path)
+    return jsonify({"message": "Image saved successfully!"})                                           
 def run_flask():
     app.run()
 

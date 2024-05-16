@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paint Program</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #paint-area {
+            border: 1px solid #000;
+            background-color: white;
+            position: relative;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        .control-group {
+            margin: 10px 0;
+        }
+        .brush-option {
+            margin: 0 10px 0 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <div class="control-group">
+            <label for="brush-size">Brush Size:</label>
+            <input type="range" id="brush-size" min="1" max="100" value="1">
+            <span id="brush-size-value">1</span>
+        </div>
+        <div class="control-group">
+            <label>Brush Type:</label>
+            <input type="radio" name="brush-type" value="round" checked class="brush-option"> Round
+            <input type="radio" name="brush-type" value="butt" class="brush-option"> Slash
+            <input type="radio" name="brush-type" value="projecting" class="brush-option"> Diamond
+            <input type="radio" name="brush-type" value="fan" class="brush-option"> Fan
+            <input type="radio" name="brush-type" value="oil" class="brush-option"> Oil Brush
+            <input type="radio" name="brush-type" value="watercolor" class="brush-option"> Watercolor
+            <input type="radio" name="brush-type" value="smudge" class="brush-option"> Smudge
+        </div>
+        <div class="control-group">
+            <label for="brush-color">Brush Color:</label>
+            <input type="color" id="brush-color" value="#000000">
+        </div>
+    </div>
+    <canvas id="paint-area" width="600" height="400"></canvas>
+    
+    <script>
+        const canvas = document.getElementById('paint-area');
+        const ctx = canvas.getContext('2d');
+        let painting = false;
+
+        function startPosition(e) {
+            painting = true;
+            paint(e);
+        }
+
+        function endPosition() {
+            painting = false;
+            ctx.beginPath();
+        }
+
+        function paint(e) {
+            if (!painting) return;
+            ctx.lineWidth = document.getElementById('brush-size').value;
+            ctx.lineCap = document.querySelector('input[name="brush-type"]:checked').value;
+            ctx.strokeStyle = document.getElementById('brush-color').value;
+
+            ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+        }
+
+        canvas.addEventListener('mousedown', startPosition);
+        canvas.addEventListener('mouseup', endPosition);
+        canvas.addEventListener('mousemove', paint);
+
+        // Update brush size value
+        const brushSizeSlider = document.getElementById('brush-size');
+        const brushSizeValue = document.getElementById('brush-size-value');
+        brushSizeSlider.addEventListener('input', () => {
+            brushSizeValue.textContent = brushSizeSlider.value;
+        });
+    </script>
+</body>
+</html>
