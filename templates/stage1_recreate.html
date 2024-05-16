@@ -25,13 +25,12 @@
             flex-direction: column;
             margin-right: 300px; /* Space between images and canvas */
             margin-left: -80px;
-            margin-top:30px;
+            margin-top: 30px;
         }
 
         #canvas-container {
             position: relative;
             margin-left: -260px;
-            
         }
 
         canvas {
@@ -39,7 +38,6 @@
             border: 5px solid #8B4513;
             border-radius: 9px;
             box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.2);
-            padding-right: -30px;
         }
 
         img {
@@ -48,7 +46,6 @@
             border: 2px solid black;
             cursor: pointer;
             margin-bottom: 45px; /* Add margin between images */
-            
         }
 
         .palette {
@@ -75,6 +72,28 @@
             text-align: center;
             background-color: #ddd;
         }
+
+        #pixels-info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        #similarity-info {
+            position: absolute;
+            top: 220px;
+            left: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
     </style>
 </head>
 <body>
@@ -85,6 +104,8 @@
         </div>
         <div id="canvas-container">
             <canvas id="whiteCanvas" width="500" height="400"></canvas>
+            <div id="pixels-info"></div>
+            <div id="similarity-info">Similarity: <span id="similarity-value">0%</span></div>
         </div>
     </div>
     <div class="palette" id="colorPalette">
@@ -126,6 +147,21 @@
         var painting = false;
         var color = '#000000';
         var brushSize = 5;
+        var paintedPixels = [];
+
+        // Load segmented image for comparison
+        var segmentedImg = new Image();
+        segmentedImg.src = "{{ url_for('static', filename='banana_segmented.png') }}";
+        var segmentedImgData = null;
+
+        segmentedImg.onload = function() {
+            var offscreenCanvas = document.createElement('canvas');
+            var offscreenCtx = offscreenCanvas.getContext('2d');
+            offscreenCanvas.width = segmentedImg.width;
+            offscreenCanvas.height = segmentedImg.height;
+            offscreenCtx.drawImage(segmentedImg, 0, 0);
+            segmentedImgData = offscreenCtx.getImageData(0, 0, segmentedImg.width, segmentedImg.height);
+        };
 
         function startPosition(e) {
             painting = true;
@@ -151,6 +187,13 @@
             ctx.stroke();
             ctx.beginPath();
             ctx.moveTo(x, y);
+
+            // Store painted pixel coordinates and color
+            var pixelColor = ctx.getImageData(x, y, 1, 1).data;
+            paintedPixels.push({ x: Math.floor(x), y: Math.floor(y), color: `rgb(${pixelColor[0]},${pixelColor[1]},${pixelColor[2]})` });
+
+            displayPaintedPixels();
+            calculateSimilarity();
         }
 
         canvas.addEventListener('mousedown', startPosition);
@@ -169,7 +212,7 @@
         };
 
         // Color palette functionality
-        var colors = ['#FF5733', '#33FF57', '#5733FF', '#FFD133', '#33FFF5', '#F533FF', '#33FFAA', '#AA33FF', '#FFAA33', '#AAFF33', '#33FF57', '#5733FF'];
+        var colors = ['#D2A627', '#DDAB11', '#E0BB47', '#EDBF1E', '#F3CD3A', '#F6D96A', '#F7D551', '#F8E280', '#FAE4A3', '#FCEDC1', '#FEFEFE', '#000000'];
         var palette = document.getElementById('colorPalette');
 
         colors.forEach(function(col) {
@@ -189,8 +232,53 @@
             brushDiv.innerText = (brushSize === 5) ? 'Brush' : 'Flat Brush';
         }
 
-        // Display the first image initially
-        // changeImage(); // Uncomment this line if you want the first image to be displayed initially
+        // Function to display painted pixels
+        function displayPaintedPixels() {
+            var pixelsInfo = document.getElementById('pixels-info');
+            pixelsInfo.innerHTML = '';
+            paintedPixels.forEach(function(pixel, index) {
+                var pixelInfo = document.createElement('div');
+                pixelInfo.textContent = `Pixel ${index + 1}: X=${pixel.x}, Y=${pixel.y}, Color=${pixel.color}`;
+                pixelsInfo.appendChild(pixelInfo);
+            });
+        }
+
+        // Function to calculate and display color similarity
+        function calculateSimilarity() {
+            if (!segmentedImgData) return;
+
+            var canvasPixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            var totalPixels = paintedPixels.length;
+            var similarPixels = 0;
+
+            paintedPixels.forEach(function(pixel) {
+                var x = pixel.x;
+                var y = pixel.y;
+                var canvasIndex = (y * canvas.width + x) * 4;
+                var segmentedIndex = (y * segmentedImg.width + x) * 4;
+
+                var canvasColor = {
+                    r: canvasPixels[canvasIndex],
+                    g: canvasPixels[canvasIndex + 1],
+                    b: canvasPixels[canvasIndex + 2]
+                };
+
+                var segmentedColor = {
+                    r: segmentedImgData.data[segmentedIndex],
+                    g: segmentedImgData.data[segmentedIndex + 1],
+                    b: segmentedImgData.data[segmentedIndex + 2]
+                };
+
+                if (canvasColor.r === segmentedColor.r &&
+                    canvasColor.g === segmentedColor.g &&
+                    canvasColor.b === segmentedColor.b) {
+                    similarPixels++;
+                }
+            });
+
+            var similarity = totalPixels > 0 ? (similarPixels / totalPixels) * 100 : 0;
+            document.getElementById('similarity-value').textContent = similarity.toFixed(2) + '%';
+        }
     </script>
 </body>
 </html>
