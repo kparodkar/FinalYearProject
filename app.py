@@ -14,7 +14,7 @@ mysql_config = {
     'password': '',  # Change this to your MySQL password
     'database': 'test'
 }
-
+ 
 # Function to establish MySQL connection
 def get_mysql_connection():
     return mysql.connector.connect(**mysql_config)
