@@ -74,15 +74,13 @@
         }
 
         #pixels-info {
-            position: absolute;
-            top: 10px;
-            left: 10px;
             background-color: rgba(255, 255, 255, 0.8);
-            padding: 10px;
+            margin-top: -400px;
             border-radius: 5px;
             border: 1px solid #ccc;
-            max-height: 200px;
+            max-height: 100px;
             overflow-y: auto;
+            margin-bottom: 20px;
         }
 
         #similarity-info {
@@ -99,22 +97,24 @@
 <body>
     <div id="container">
         <div id="images-container">
-            <img id="imageDisplayOriginal" onclick="changeImage()" src="{{ url_for('static', filename='bananaa.jpeg') }}">
+            <img id="imageDisplayOriginal" onclick="changeImage()" src="{{ url_for('static', filename='banana_original.png') }}">
             <img id="imageDisplaySegmented" onclick="changeImage()" src="{{ url_for('static', filename='banana_segmented.png') }}">
         </div>
         <div id="canvas-container">
             <canvas id="whiteCanvas" width="500" height="400"></canvas>
-            <div id="pixels-info"></div>
+            
             <div id="similarity-info">Similarity: <span id="similarity-value">0%</span></div>
         </div>
     </div>
+
     <div class="palette" id="colorPalette">
         <!-- Color palette will be generated dynamically -->
     </div>
+   
     <div class="brush" id="brush">
         Brush
     </div>
-
+    <div id="pixels-info"></div>
     <script>
         // Array to store image paths
         var images = ['banana_original.png', 'banana_segmented.png'];
@@ -146,8 +146,9 @@
         var ctx = canvas.getContext('2d');
         var painting = false;
         var color = '#000000';
-        var brushSize = 5;
+        var brushSize = 10;
         var paintedPixels = [];
+        var gridSize = 50; // Adjust the grid size as needed
 
         // Load segmented image for comparison
         var segmentedImg = new Image();
@@ -228,7 +229,7 @@
         // Brush functionality
         var brushDiv = document.getElementById('brush');
         brushDiv.onclick = function() {
-            brushSize = (brushSize === 5) ? 10 : 5;
+            brushSize = (brushSize === 10) ? 5 : 10;
             brushDiv.innerText = (brushSize === 5) ? 'Brush' : 'Flat Brush';
         }
 
@@ -245,40 +246,49 @@
 
         // Function to calculate and display color similarity
         function calculateSimilarity() {
-            if (!segmentedImgData) return;
+    if (!segmentedImgData) return;
 
-            var canvasPixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-            var totalPixels = paintedPixels.length;
-            var similarPixels = 0;
+    var totalPixels = paintedPixels.length;
+    var totalDifference = 0;
 
-            paintedPixels.forEach(function(pixel) {
-                var x = pixel.x;
-                var y = pixel.y;
-                var canvasIndex = (y * canvas.width + x) * 4;
-                var segmentedIndex = (y * segmentedImg.width + x) * 4;
+    paintedPixels.forEach(function(pixel) {
+        var x = pixel.x;
+        var y = pixel.y;
 
-                var canvasColor = {
-                    r: canvasPixels[canvasIndex],
-                    g: canvasPixels[canvasIndex + 1],
-                    b: canvasPixels[canvasIndex + 2]
-                };
+        var gridX = Math.floor(x / gridSize);
+        var gridY = Math.floor(y / gridSize);
 
-                var segmentedColor = {
-                    r: segmentedImgData.data[segmentedIndex],
-                    g: segmentedImgData.data[segmentedIndex + 1],
-                    b: segmentedImgData.data[segmentedIndex + 2]
-                };
+        // Get the color of the pixel painted by the user
+        var paintedPixelColor = ctx.getImageData(x, y, 1, 1).data;
 
-                if (canvasColor.r === segmentedColor.r &&
-                    canvasColor.g === segmentedColor.g &&
-                    canvasColor.b === segmentedColor.b) {
-                    similarPixels++;
-                }
-            });
+        // Get the color of the corresponding pixel in the segmented image
+        var segmentedIndex = (gridY * gridSize * segmentedImg.width + gridX * gridSize + (y % gridSize) * segmentedImg.width + (x % gridSize)) * 4;
+        var segmentedColor = {
+            r: segmentedImgData.data[segmentedIndex],
+            g: segmentedImgData.data[segmentedIndex + 1],
+            b: segmentedImgData.data[segmentedIndex + 2]
+        };
 
-            var similarity = totalPixels > 0 ? (similarPixels / totalPixels) * 100 : 0;
-            document.getElementById('similarity-value').textContent = similarity.toFixed(2) + '%';
-        }
+        // Calculate the Euclidean distance between the colors
+        var difference = Math.sqrt(
+            Math.pow(paintedPixelColor[0] - segmentedColor.r, 2) +
+            Math.pow(paintedPixelColor[1] - segmentedColor.g, 2) +
+            Math.pow(paintedPixelColor[2] - segmentedColor.b, 2)
+        );
+
+        totalDifference += difference;
+    });
+
+    // Calculate average difference
+    var averageDifference = totalPixels > 0 ? totalDifference / totalPixels : 0;
+
+    // Scale the average difference to a similarity percentage (higher values mean less similarity)
+    var similarity = Math.min(1, averageDifference / 255); // Normalize to range [0, 1]
+    similarity = (1 - similarity) * 100; // Invert and convert to percentage
+
+    document.getElementById('similarity-value').textContent = similarity.toFixed(2) + '%';
+}
+
     </script>
 </body>
 </html>
