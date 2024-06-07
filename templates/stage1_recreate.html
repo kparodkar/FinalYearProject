@@ -220,11 +220,14 @@
         const colors = ['#D2A627', '#DDAB11', '#E0BB47', '#EDBF1E', '#F3CD3A', '#F6D96A', '#F7D551', '#F8E280', '#FAE4A3', '#FCEDC1', '#FEFEFE', '#000000'];
         const palette = document.getElementById('colorPalette');
 
-        colors.forEach(col => {
+        colors.forEach((col, index) => {
             const colorDiv = document.createElement('div');
             colorDiv.className = 'color';
             colorDiv.style.backgroundColor = col;
-            colorDiv.onclick = () => color = col;
+            colorDiv.onclick = () => {
+                color = col;
+                console.log(`Selected color: ${col} (Index: ${index + 1})`);
+            };
             palette.appendChild(colorDiv);
         });
 
@@ -240,7 +243,6 @@
             paintedPixels.forEach((pixel, index) => {
                 const pixelInfo = document.createElement('div');
                 pixelInfo.textContent = `Pixel ${index + 1}: X=${pixel.x}, Y=${pixel.y}, Color=${pixel.color}`;
-                //pixelsInfo.appendChild(pixelInfo);
             });
         }
 
@@ -286,22 +288,74 @@
         function highlightSegmentedRegion(x, y) {
             const canvas = document.getElementById('whiteCanvas');
             const ctx = canvas.getContext('2d');
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-            const paintedPixelColor = ctx.getImageData(x, y, 1, 1).data;
+            const pixelColor = ctx.getImageData(x, y, 1, 1).data;
 
-            for (let i = 0; i < paintedPixels.length; i++) {
-                const pixel = paintedPixels[i];
-                if (pixel.x === x && pixel.y === y) {
-                    const index = (pixel.y * imageData.width + pixel.x) * 4;
-                    imageData.data[index] = 255; // Red channel
-                    imageData.data[index + 1] = 0; // Green channel
-                    imageData.data[index + 2] = 0; // Blue channel
-                    imageData.data[index + 3] = 128; // Alpha channel (semi-transparent)
+            const gridX = Math.floor(x / gridSize) * gridSize;
+            const gridY = Math.floor(y / gridSize) * gridSize;
+            const enlargedCanvas = document.getElementById('enlarged-cell');
+            const enlargedCtx = enlargedCanvas.getContext('2d');
+            enlargedCanvas.width = gridSize;
+            enlargedCanvas.height = gridSize;
+            enlargedCtx.clearRect(0, 0, enlargedCanvas.width, enlargedCanvas.height);
+            enlargedCtx.drawImage(segmentedImg, gridX, gridY, gridSize, gridSize, 0, 0, gridSize, gridSize);
+
+            const enlargedCellContainer = document.getElementById('enlarged-cell-container');
+            enlargedCellContainer.style.display = 'block';
+
+            // Draw red dot on the segmented image
+            const segmentedImage = document.getElementById('imageDisplaySegmented');
+            const segmentedImageCanvas = document.createElement('canvas');
+            const segmentedImageCtx = segmentedImageCanvas.getContext('2d');
+            segmentedImageCanvas.width = segmentedImg.width;
+            segmentedImageCanvas.height = segmentedImg.height;
+            segmentedImageCtx.drawImage(segmentedImg, 0, 0);
+
+            segmentedImageCtx.fillStyle = 'red';
+            segmentedImageCtx.beginPath();
+            segmentedImageCtx.arc(x, y, 5, 0, Math.PI * 2, true);
+            segmentedImageCtx.fill();
+
+            // Convert the updated canvas to data URL and update the image source
+            segmentedImage.src = segmentedImageCanvas.toDataURL();
+        }
+
+        function getClosestColor(targetColor, colors) {
+            let minDiff = Infinity;
+            let closestColor = null;
+            let closestIndex = -1;
+
+            colors.forEach((color, index) => {
+                const rgb = hexToRgb(color);
+                const diff = colorDifference(targetColor, rgb);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    closestColor = color;
+                    closestIndex = index;
                 }
-            }
+            });
 
-            ctx.putImageData(imageData, 0, 0);
+            return { color: closestColor, index: closestIndex };
+        }
+
+        function colorDifference(c1, c2) {
+            return Math.sqrt(
+                Math.pow(c1.r - c2.r, 2) +
+                Math.pow(c1.g - c2.g, 2) +
+                Math.pow(c1.b - c2.b, 2)
+            );
+        }
+
+        function hexToRgb(hex) {
+            hex = hex.replace(/^#/, '');
+            if (hex.length === 3) {
+                hex = hex.split('').map(char => char + char).join('');
+            }
+            const bigint = parseInt(hex, 16);
+            const r = (bigint >> 16) & 255;
+            const g = (bigint >> 8) & 255;
+            const b = bigint & 255;
+            return { r, g, b };
         }
 
         function checkCorrectColor(x, y, paintedPixelColor) {
@@ -328,7 +382,8 @@
                 message.style.backgroundColor = 'rgba(0, 255, 0, 0.5)';
                 document.getElementById('enlarged-cell-container').style.display = 'none';
             } else {
-                message.textContent = 'Color match below 80%!';
+                const closestColor = getClosestColor(segmentedColor, colors);
+                message.textContent = `Use color ${closestColor.index + 1}: ${closestColor.color}`;
                 message.style.backgroundColor = 'rgba(255, 0, 0, 0.5)';
                 highlightSegmentedRegion(x, y);
                 displayEnlargedCell(x, y);
