@@ -118,7 +118,7 @@
     <div id="container">
         <div id="images-container">
             <img id="imageDisplayOriginal" onclick="changeImage()" src="{{ url_for('static', filename='banana_original.png') }}">
-            <img id="imageDisplaySegmented" onclick="changeImage()" src="{{ url_for('static', filename='banana_segmented.png') }}">
+            <img id="imageDisplaySegmented" style="width: 470px;height: 330px;" onclick="changeImage()" src="{{ url_for('static', filename='banana_segmented.png') }}">
         </div>
         <div id="canvas-container">
             <canvas id="whiteCanvas" width="500" height="400"></canvas>
@@ -201,6 +201,7 @@
             displayPaintedPixels();
             calculateSimilarity();
             checkCorrectColor(x, y, pixelColor);
+            displayEnlargedCell(x, y); // Update enlarged cell display
         }
 
         canvas.addEventListener('mousedown', startPosition);
@@ -297,9 +298,6 @@
             const enlargedCtx = enlargedCanvas.getContext('2d');
             enlargedCanvas.width = gridSize;
             enlargedCanvas.height = gridSize;
-            enlargedCtx.clearRect(0, 0, enlargedCanvas.width, enlargedCanvas.height);
-            enlargedCtx.drawImage(segmentedImg, gridX, gridY, gridSize, gridSize, 0, 0, gridSize, gridSize);
-
             const enlargedCellContainer = document.getElementById('enlarged-cell-container');
             enlargedCellContainer.style.display = 'block';
 
@@ -381,6 +379,8 @@
                 message.textContent = 'Color match (above 80%)!';
                 message.style.backgroundColor = 'rgba(0, 255, 0, 0.5)';
                 document.getElementById('enlarged-cell-container').style.display = 'none';
+                displayEnlargedCell(x, y);
+                highlightSegmentedRegion(x, y);
             } else {
                 const closestColor = getClosestColor(segmentedColor, colors);
                 message.textContent = `Use color ${closestColor.index + 1}: ${closestColor.color}`;
@@ -390,21 +390,43 @@
             }
         }
 
-        function displayEnlargedCell(x, y) {
-            const gridX = Math.floor(x / gridSize) * gridSize;
-            const gridY = Math.floor(y / gridSize) * gridSize;
+        // function displayEnlargedCell(x, y) {
+        //     const gridX = Math.floor(x / gridSize) * gridSize;
+        //     const gridY = Math.floor(y / gridSize) * gridSize;
 
-            const enlargedCanvas = document.getElementById('enlarged-cell');
-            const enlargedCtx = enlargedCanvas.getContext('2d');
-            enlargedCanvas.width = gridSize;
-            enlargedCanvas.height = gridSize;
+        //     const enlargedCanvas = document.getElementById('enlarged-cell');
+        //     const enlargedCtx = enlargedCanvas.getContext('2d');
+        //     enlargedCanvas.width = gridSize;
+        //     enlargedCanvas.height = gridSize;
 
-            enlargedCtx.clearRect(0, 0, enlargedCanvas.width, enlargedCanvas.height);
-            enlargedCtx.drawImage(segmentedImg, gridX, gridY, gridSize, gridSize, 0, 0, gridSize, gridSize);
+        //     enlargedCtx.clearRect(0, 0, enlargedCanvas.width, enlargedCanvas.height);
+        //     enlargedCtx.drawImage(segmentedImg, gridX, gridY, gridSize, gridSize, 0, 0, gridSize, gridSize);
 
-            const enlargedCellContainer = document.getElementById('enlarged-cell-container');
-            enlargedCellContainer.style.display = 'block';
-        }
+        //     const enlargedCellContainer = document.getElementById('enlarged-cell-container');
+        //     enlargedCellContainer.style.display = 'block';
+        // }
+        function displayEnlargedCell(mouseX, mouseY) {
+    const enlargedCellContainer = document.getElementById('enlarged-cell-container');
+    const enlargedCellCanvas = document.getElementById('enlarged-cell');
+    const enlargedCellCtx = enlargedCellCanvas.getContext('2d');
+    const cellSize = 50; // Assuming each cell on the canvas is 50x50 pixels
+
+    enlargedCellContainer.style.display = 'block';
+    enlargedCellCanvas.width = cellSize;
+    enlargedCellCanvas.height = cellSize;
+
+    enlargedCellCtx.clearRect(0, 0, enlargedCellCanvas.width, enlargedCellCanvas.height);
+
+    const cellX = Math.floor(mouseX / cellSize) * cellSize;
+    const cellY = Math.floor(mouseY / cellSize) * cellSize;
+
+    enlargedCellCtx.drawImage(
+        canvas, // Source canvas
+        cellX, cellY, cellSize, cellSize, // Source rectangle (the entire cell)
+        0, 0, cellSize, cellSize // Destination rectangle (the entire enlarged cell)
+    );
+}
+
     </script>
 </body>
 </html>
