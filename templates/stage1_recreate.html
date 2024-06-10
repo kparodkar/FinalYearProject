@@ -118,7 +118,7 @@
     <div id="container">
         <div id="images-container">
             <img id="imageDisplayOriginal" onclick="changeImage()" src="{{ url_for('static', filename='banana_original.png') }}">
-            <img id="imageDisplaySegmented" style="width: 400px;height: 280px;" onclick="changeImage()" src="{{ url_for('static', filename='banana_segmented.png') }}">
+            <img id="imageDisplaySegmented" style="width:440px;height: 320px;" onclick="changeImage()" src="{{ url_for('static', filename='banana_segmented.png') }}">
         </div>
         <div id="canvas-container">
             <canvas id="whiteCanvas" width="500" height="400"></canvas>
@@ -406,26 +406,24 @@
         //     enlargedCellContainer.style.display = 'block';
         // }
         function displayEnlargedCell(mouseX, mouseY) {
-    const enlargedCellContainer = document.getElementById('enlarged-cell-container');
-    const enlargedCellCanvas = document.getElementById('enlarged-cell');
-    const enlargedCellCtx = enlargedCellCanvas.getContext('2d');
-    const cellSize = 50; // Assuming each cell on the canvas is 50x50 pixels
+            const cellSize = 50;
+            const enlargedCellContainer = document.getElementById('enlarged-cell-container');
+            const enlargedCellCanvas = document.getElementById('enlarged-cell');
+            const enlargedCellCtx = enlargedCellCanvas.getContext('2d');
 
-    enlargedCellContainer.style.display = 'block';
-    enlargedCellCanvas.width = cellSize;
-    enlargedCellCanvas.height = cellSize;
+            enlargedCellCanvas.width = cellSize;
+            enlargedCellCanvas.height = cellSize;
 
-    enlargedCellCtx.clearRect(0, 0, enlargedCellCanvas.width, enlargedCellCanvas.height);
+            const startX = Math.max(mouseX - cellSize / 2, 0);
+            const startY = Math.max(mouseY - cellSize / 2, 0);
+            const endX = Math.min(mouseX + cellSize / 2, canvas.width);
+            const endY = Math.min(mouseY + cellSize / 2, canvas.height);
 
-    const cellX = Math.floor(mouseX / cellSize) * cellSize;
-    const cellY = Math.floor(mouseY / cellSize) * cellSize;
+            enlargedCellCtx.clearRect(0, 0, cellSize, cellSize);
+            enlargedCellCtx.drawImage(canvas, startX, startY, endX - startX, endY - startY, 0, 0, cellSize, cellSize);
 
-    enlargedCellCtx.drawImage(
-        canvas, // Source canvas
-        cellX, cellY, cellSize, cellSize, // Source rectangle (the entire cell)
-        0, 0, cellSize, cellSize // Destination rectangle (the entire enlarged cell)
-    );
-}
+            enlargedCellContainer.style.display = 'block';
+        }
 
     </script>
 </body>
