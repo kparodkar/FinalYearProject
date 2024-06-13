@@ -14,6 +14,18 @@
             height: 100vh;
             background-color: #f0f0f0;
         }
+        .color {
+    position: relative;
+}
+
+.color::before {
+    content: attr(data-index);
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
         #container {
             display: flex;
             align-items: center;
@@ -82,6 +94,15 @@
             border-radius: 5px;
             border: 1px solid #ccc;
         }
+        #checkSimilarityButton {
+            margin-top: 20px;
+            cursor: pointer;
+            border: 1px solid #000;
+            padding: 5px;
+            text-align: center;
+            background-color: #ddd;
+}
+
         #highlight-img {
             position: absolute;
             top: 100px;
@@ -128,6 +149,8 @@
     </div>
     <div class="palette" id="colorPalette"></div>
     <div class="brush" id="brush">Brush</div>
+    <button id="checkSimilarityButton">Check Similarity</button>
+
     <div id="pixels-info"></div>
     <img id="highlight-img">
     <div id="enlarged-cell-container">
@@ -199,7 +222,7 @@
             paintedPixels.push({ x: Math.floor(x), y: Math.floor(y), color: `rgb(${pixelColor[0]},${pixelColor[1]},${pixelColor[2]})` });
 
             displayPaintedPixels();
-            calculateSimilarity();
+            // calculateSimilarity();
             checkCorrectColor(x, y, pixelColor);
             displayEnlargedCell(x, y); // Update enlarged cell display
         }
@@ -213,24 +236,28 @@
             const ctx = canvas.getContext('2d');
             const img = new Image();
             img.onload = function() {
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
             }
             img.src = "{{ url_for('static', filename='sketchgrid_banana.png') }}";
+            
         };
 
-        const colors = ['#D2A627', '#DDAB11', '#E0BB47', '#EDBF1E', '#F3CD3A', '#F6D96A', '#F7D551', '#F8E280', '#FAE4A3', '#FCEDC1', '#FEFEFE', '#000000'];
-        const palette = document.getElementById('colorPalette');
+        const colors = ['#61472B','#D7A81D', '#DDAB11', '#E0BB47', '#ECBF1F', '#F3CD3A', ' #F1CD46', '#F7D551', '#F7DE75', '#F7DE75', '#FBE7AE','#FFFFFF']; 
 
-        colors.forEach((col, index) => {
-            const colorDiv = document.createElement('div');
-            colorDiv.className = 'color';
-            colorDiv.style.backgroundColor = col;
-            colorDiv.onclick = () => {
-                color = col;
-                console.log(`Selected color: ${col} (Index: ${index + 1})`);
-            };
-            palette.appendChild(colorDiv);
-        });
+const palette = document.getElementById('colorPalette');
+
+colors.forEach((col, index) => {
+    const colorDiv = document.createElement('div');
+    colorDiv.className = 'color';
+    colorDiv.style.backgroundColor = col;
+    colorDiv.setAttribute('data-index', index + 1);
+    colorDiv.onclick = () => {
+        color = col;
+        console.log(`Selected color: ${col} (Index: ${index + 1})`);
+    };
+    palette.appendChild(colorDiv);
+});
+       
 
         const brushDiv = document.getElementById('brush');
         brushDiv.onclick = function() {
@@ -248,75 +275,81 @@
         }
 
         function calculateSimilarity() {
-            if (!segmentedImgData) return;
+        if (!segmentedImgData) return;
 
-            const totalPixels = paintedPixels.length;
-            let totalDifference = 0;
+        const totalPixels = paintedPixels.length;
+        let totalDifference = 0;
 
-            paintedPixels.forEach(pixel => {
-                const x = pixel.x;
-                const y = pixel.y;
+        paintedPixels.forEach(pixel => {
+            const x = pixel.x;
+            const y = pixel.y;
 
-                const gridX = Math.floor(x / gridSize);
-                const gridY = Math.floor(y / gridSize);
+            const gridX = Math.floor(x / gridSize);
+            const gridY = Math.floor(y / gridSize);
 
-                const paintedPixelColor = ctx.getImageData(x, y, 1, 1).data;
+            const paintedPixelColor = ctx.getImageData(x, y, 1, 1).data;
 
-                const segmentedIndex = (gridY * gridSize * segmentedImg.width + gridX * gridSize + (y % gridSize) * segmentedImg.width + (x % gridSize)) * 4;
-                const segmentedColor = {
-                    r: segmentedImgData.data[segmentedIndex],
-                    g: segmentedImgData.data[segmentedIndex + 1],
-                    b: segmentedImgData.data[segmentedIndex + 2]
-                };
+            const segmentedIndex = (gridY * gridSize * segmentedImg.width + gridX * gridSize + (y % gridSize) * segmentedImg.width + (x % gridSize)) * 4;
+            const segmentedColor = {
+                r: segmentedImgData.data[segmentedIndex],
+                g: segmentedImgData.data[segmentedIndex + 1],
+                b: segmentedImgData.data[segmentedIndex + 2]
+            };
 
-                const difference = Math.sqrt(
-                    Math.pow(paintedPixelColor[0] - segmentedColor.r, 2) +
-                    Math.pow(paintedPixelColor[1] - segmentedColor.g, 2) +
-                    Math.pow(paintedPixelColor[2] - segmentedColor.b, 2)
-                );
+            const difference = Math.sqrt(
+                Math.pow(paintedPixelColor[0] - segmentedColor.r, 2) +
+                Math.pow(paintedPixelColor[1] - segmentedColor.g, 2) +
+                Math.pow(paintedPixelColor[2] - segmentedColor.b, 2)
+            );
 
-                totalDifference += difference;
-            });
+            totalDifference += difference;
+        });
 
-            const averageDifference = totalPixels > 0 ? totalDifference / totalPixels : 0;
+        const averageDifference = totalPixels > 0 ? totalDifference / totalPixels : 0;
 
-            let similarity = Math.min(1, averageDifference / 255);
-            similarity = (1 - similarity) * 100;
+        let similarity = Math.min(1, averageDifference / 255);
+        similarity = (1 - similarity) * 100;
 
-            document.getElementById('similarity-value').textContent = similarity.toFixed(2) + '%';
-        }
+        document.getElementById('similarity-value').textContent = similarity.toFixed(2) + '%';
+    }
+
+    document.getElementById('checkSimilarityButton').addEventListener('click', calculateSimilarity);
+
 
         function highlightSegmentedRegion(x, y) {
-            const canvas = document.getElementById('whiteCanvas');
-            const ctx = canvas.getContext('2d');
+    if (!segmentedImgData) return;
 
-            const pixelColor = ctx.getImageData(x, y, 1, 1).data;
+    const segmentedCanvas = document.createElement('canvas');
+    const segmentedCtx = segmentedCanvas.getContext('2d');
+    segmentedCanvas.width = segmentedImg.width;
+    segmentedCanvas.height = segmentedImg.height;
 
-            const gridX = Math.floor(x / gridSize) * gridSize;
-            const gridY = Math.floor(y / gridSize) * gridSize;
-            const enlargedCanvas = document.getElementById('enlarged-cell');
-            const enlargedCtx = enlargedCanvas.getContext('2d');
-            enlargedCanvas.width = gridSize;
-            enlargedCanvas.height = gridSize;
-            const enlargedCellContainer = document.getElementById('enlarged-cell-container');
-            enlargedCellContainer.style.display = 'block';
+    segmentedCtx.putImageData(segmentedImgData, 0, 0);
 
-            // Draw red dot on the segmented image
-            const segmentedImage = document.getElementById('imageDisplaySegmented');
-            const segmentedImageCanvas = document.createElement('canvas');
-            const segmentedImageCtx = segmentedImageCanvas.getContext('2d');
-            segmentedImageCanvas.width = segmentedImg.width;
-            segmentedImageCanvas.height = segmentedImg.height;
-            segmentedImageCtx.drawImage(segmentedImg, 0, 0);
+    const redDotX = Math.floor((x / canvas.width) * segmentedImg.width);
+    const redDotY = Math.floor((y / canvas.height) * segmentedImg.height);
 
-            segmentedImageCtx.fillStyle = 'red';
-            segmentedImageCtx.beginPath();
-            segmentedImageCtx.arc(x, y, 5, 0, Math.PI * 2, true);
-            segmentedImageCtx.fill();
+    segmentedCtx.fillStyle = 'red';
+    segmentedCtx.beginPath();
+    segmentedCtx.arc(redDotX, redDotY, 5, 0, Math.PI * 2, true);
+    segmentedCtx.fill();
 
-            // Convert the updated canvas to data URL and update the image source
-            segmentedImage.src = segmentedImageCanvas.toDataURL();
-        }
+    const highlightImg = document.getElementById('highlight-img');
+    highlightImg.src = segmentedCanvas.toDataURL();
+    highlightImg.style.display = 'block';
+
+    const segmentedImage = document.getElementById('imageDisplaySegmented');
+    const rect = segmentedImage.getBoundingClientRect();
+
+    highlightImg.style.position = 'absolute';
+    highlightImg.style.left = `${rect.left}px`;
+    highlightImg.style.top = `${rect.top}px`;
+    highlightImg.style.width = `${segmentedImage.width}px`;
+    highlightImg.style.height = `${segmentedImage.height}px`;
+}
+
+
+
 
         function getClosestColor(targetColor, colors) {
             let minDiff = Infinity;
@@ -356,39 +389,43 @@
             return { r, g, b };
         }
 
-        function checkCorrectColor(x, y, paintedPixelColor) {
-            if (!segmentedImgData) return;
+        function rgbToHex(r, g, b) {
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+}
 
-            const gridX = Math.floor(x / gridSize) * gridSize;
-            const gridY = Math.floor(y / gridSize) * gridSize;
-            const segmentedIndex = (gridY * segmentedImg.width + gridX) * 4;
-            const segmentedColor = {
-                r: segmentedImgData.data[segmentedIndex],
-                g: segmentedImgData.data[segmentedIndex + 1],
-                b: segmentedImgData.data[segmentedIndex + 2]
-            };
+function checkCorrectColor(x, y, pixelColor) {
+    if (segmentedImgData) {
+        const imgX = Math.floor((x / canvas.width) * segmentedImgData.width);
+        const imgY = Math.floor((y / canvas.height) * segmentedImgData.height);
+        const index = (imgY * segmentedImgData.width + imgX) * 4;
+        const r = segmentedImgData.data[index];
+        const g = segmentedImgData.data[index + 1];
+        const b = segmentedImgData.data[index + 2];
 
-            const colorDiffR = Math.abs(paintedPixelColor[0] - segmentedColor.r);
-            const colorDiffG = Math.abs(paintedPixelColor[1] - segmentedColor.g);
-            const colorDiffB = Math.abs(paintedPixelColor[2] - segmentedColor.b);
+        const correctColorHex = rgbToHex(r, g, b);
+        const userColorHex = rgbToHex(pixelColor[0], pixelColor[1], pixelColor[2]);
 
-            const threshold = 40;
-
-            const message = document.getElementById('message');
-            if (colorDiffR <= threshold && colorDiffG <= threshold && colorDiffB <= threshold) {
-                message.textContent = 'Color match (above 80%)!';
-                message.style.backgroundColor = 'rgba(0, 255, 0, 0.5)';
-                document.getElementById('enlarged-cell-container').style.display = 'none';
-                displayEnlargedCell(x, y);
-                highlightSegmentedRegion(x, y);
+        const messageElement = document.getElementById('message');
+        if (correctColorHex === userColorHex) {
+            messageElement.style.backgroundColor = '#8bc34a'; // Green background for correct color
+            messageElement.innerHTML = "Correct color!";
+            highlightSegmentedRegion(x, y);
+        } else {
+            let correctColorIndex;
+            // Check if correctColorHex is #F1CD46
+            if (correctColorHex === "#F1CD46") {
+                correctColorIndex = 7; // Set correctColorIndex to 7
             } else {
-                const closestColor = getClosestColor(segmentedColor, colors);
-                message.textContent = `Use color ${closestColor.index + 1}: ${closestColor.color}`;
-                message.style.backgroundColor = 'rgba(255, 0, 0, 0.5)';
-                highlightSegmentedRegion(x, y);
-                displayEnlargedCell(x, y);
+                // Otherwise, find the index of correctColorHex in the colors array
+                correctColorIndex = colors.findIndex(c => c.toUpperCase() === correctColorHex) + 1;
             }
+            messageElement.style.backgroundColor = '#f44336'; // Red background for use color message
+            messageElement.innerHTML = `Use color ${correctColorIndex}: ${correctColorHex}`;
+            highlightSegmentedRegion(x, y);
         }
+    }
+}
+
 
         // function displayEnlargedCell(x, y) {
         //     const gridX = Math.floor(x / gridSize) * gridSize;
