@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Selection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 92.2vh;
+            background-color: white;
+            border-left: 25px solid rgb(12, 66, 83);
+            border-right: 25px solid rgb(12, 66, 83);
+            border-top: 25px solid rgb(12, 66, 83);
+            border-bottom: 25px solid rgb(12, 66, 83);
+        }
+
+        .container {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #c1d4f1;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container p {
+            font-size: 27px;
+            margin-top: 15px;
+        }
+
+    
+        .card {
+            width: 350px;
+            height: 200px;
+            padding: 30px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        .card p {
+            font-size: 26px;
+            margin-top: 80px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .red {
+            background-color: #f85353;
+        }
+
+        .green {
+            background-color: #5dc55d;
+        }
+
+        .blueButton {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            width: 120px;
+            height: 120px;
+            font-size: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s ease;
+            text-align: center;
+            text-transform: uppercase;
+            margin-right: -200px; /* Added margin to create space between buttons */
+        }
+        .blueButton2 {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            width: 120px;
+            height: 120px;
+            font-size: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s ease;
+            text-align: center;
+            text-transform: uppercase;
+            margin-right: 100px; /* Added margin to create space between buttons */
+        }
+
+        .blueButton:hover {
+            background-color: #0056b3;
+        }
+
+        #imageFileInput {
+            display: none;
+        }
+
+        .fileInputLabel {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        #selectedImageContainer {
+            margin-top: 20px;
+            text-align: center;
+            display: flex;
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            height: 300px; /* Set a fixed height for the container */
+            /* Positioning */
+            position: fixed; /* Adjust positioning method as needed */
+            bottom: 95px; /* Adjust distance from the bottom */
+            right: 555px; /* Adjust distance from the right */
+        }
+
+        #selectedImageContainer img {
+            max-width: 100%; /* Ensure image doesn't exceed container width */
+            max-height: 100%; /* Ensure image doesn't exceed container height */
+            object-fit: contain; /* Maintain aspect ratio */
+        }
+
+        form {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 120px;
+            height: 120px;
+        }
+
+        .blueButton1 {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            width: 120px;
+            height: 120px;
+            font-size: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s ease;
+            text-align: center;
+            text-transform: uppercase;
+            
+            /* Positioning */
+            position: fixed; /* Adjust positioning method as needed */
+            bottom: 55px; /* Adjust distance from the bottom */
+            right: 125px; /* Adjust distance from the right */
+        }        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <p>IMAGE SELECTION</p>
+        <p>Explore the various modules and kick-start your process of learning painting!</p>
+    </div>
+    <form id="imageForm" action="/select_and_process_image" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="imageFileInput" class="blueButton fileInputLabel">Choose Image</label>
+            <input type="file" name="image_file" id="imageFileInput">
+        </div>
+        <button type="submit" class="blueButton2">Select Image</button>
+    </form>
+    <div id="selectedImageContainer">
+        <!-- The image will be dynamically added here -->
+    </div>
+    <button id="nextButton" class="blueButton1">Next</button>
+
+    <script>
+        // Define a global variable to store the response data
+        var responseData;
+        var name;
+        var hexCodes;
+        document.getElementById('imageForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            console.log("Form submitted");
+            var formData = new FormData(this);
+            var file = formData.get('image_file');
+            var filename = file.name; // Accessing the filename
+            console.log("Filename:", filename); // Log the filename
+            name = filename;
+            fetch('/select_and_process_image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Response:", data);
+                responseData = data; // Store the response data in the global variable
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    var imageUrl = '/static/uploads/' + filename;
+                    var imgElement = document.createElement('img');
+                    imgElement.src = imageUrl;
+                    var container = document.getElementById('selectedImageContainer');
+                    container.innerHTML = ''; // Clear previous content
+                    container.appendChild(imgElement); // Append the new image
+                    if (data.data && data.data.hex_codes) {
+                        hexCodes = data.data.hex_codes;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        // Add click event listener to the next button
+        document.getElementById('nextButton').addEventListener('click', function() {
+            // Get the filename and hex codes
+            const filename = encodeURIComponent(name);
+            const hexCodes2 = encodeURIComponent(JSON.stringify(hexCodes)); // Convert hex codes array to a JSON string
+            
+            // Redirect to the next page with both filename and hex codes as query parameters
+            window.location.href = '/page_one?filename=' + filename + '&hex_codes=' + hexCodes2;
+        });
+    </script>
+</body>
+</html>
