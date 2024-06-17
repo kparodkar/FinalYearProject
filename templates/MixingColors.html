@@ -10,8 +10,9 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            height: 92.2vh;
             background-color: white;
+            height: 92.2vh;
+           
             border-left: 25px solid rgb(12, 66, 83);
             border-right: 25px solid rgb(12, 66, 83);
             border-top: 25px solid rgb(12, 66, 83);
@@ -66,7 +67,8 @@
             font-size: 30px;
             margin-bottom: 10px;
             text-align: center;
-        }
+        } 
+        
 
         .card p {
             font-size: 20px;
@@ -158,47 +160,49 @@
     </div>
 
     <div class="card-container">
-        <div class="card" style="background-color:rgb(247, 169, 24)" onmouseover="showPopup(1)"
-            onmouseout="hidePopup(1)">
+    <a href="/colormixstages" class="card" style="background-color:rgb(247, 169, 24);text-decoration: none;" onmouseover="showPopup(1)"
+    onmouseout="hidePopup(1)" > 
             <span class="lock-icon" style="padding-left:200px">&#x1F512;</span>
-            <h3 style="font-style:italic">Level 1</h3>
-        </div>
-        <div class="card" style="background-color:rgb(196, 88, 106)">
+            <h3 style="font-style:italic;color: black;">Level 1</h3>
+        </a>
+        <a href="/stage2_colormixing" class="card" style="background-color:rgb(196, 88, 106);text-decoration: none;" onmouseover="showPopup(1)"
+    onmouseout="hidePopup(1)" > 
             <span class="lock-icon" style="padding-left:200px">&#x1F512;</span>
-            <h3 style="font-style:italic">Level 2</h3>
-        </div>
-        <div class=" card" style="background-color: rgb(80, 184, 70)" onclick="direct()"> 
+            <h3 style="font-style:italic;color: black;">Level 2</h3>
+        </a>
+        <a href="/stage3_learnpaint" class="card" style="background-color:rgb(80, 184, 70);text-decoration: none;" onmouseover="showPopup(1)"
+    onmouseout="hidePopup(1)" > 
             <span class="lock-icon" style="padding-left:200px">&#x1F512;</span>
-            <h3 style="font-style:italic">Level 3</h3>
-        </div>
+            <h3 style="font-style:italic;color: black;">Level 3</h3>
+        </a>
     </div>
-
+    <!-- rgb(80, 184, 70) -->
     <!-- Popup for Level 1 -->
-    <div id="popup1" class="popup" style="z-index: 999;">
+    <!-- <div id="popup1" class="popup" style="z-index: 999;">
         <p id="step1">1. You will be provided with color palette and a target color.</p>
         <p id="step2" style="display:none">2.Your aim is to match the target color using color palette and a slider.</p>
         <p id="step3" style="display:none">3.Make sure the similarity score is 75% or above.</p>
         <button id="nextButton" onclick="nextStep(1)">Next</button>
-    </div>
+    </div> -->
 
     <!-- Popup for Level 2 -->
-    <div id="popup2" class="popup" style="display:none; z-index: 999;">
+    <!-- <div id="popup2" class="popup" style="display:none; z-index: 999;">
         <p id="step1_2">2.Your aim is to match the target color</p>
         <button id="nextButton2" onclick="nextStep(2)">Next</button>
-    </div>
+    </div> -->
 
     <!-- Popup for Level 3 -->
-    <div id="popup3" class="popup" style="display:none; z-index: 999;">
+    <!-- <div id="popup3" class="popup" style="display:none; z-index: 999;">
         <p id="step1_3">3.Make sure the similarity score is 75% or above.</p>
         <button id="nextButton3" onclick="nextStep(3)">Next</button>
-    </div>
+    </div> -->
 
     <!-- Popup for "ARE YOU READY" -->
-    <div id="readyPopup" class="popup" style="display:none; z-index: 999;">
+    <!-- <div id="readyPopup" class="popup" style="display:none; z-index: 999;">
         <p>ARE YOU READY?</p>
         <button onclick="confirmReady(true)">Yes</button>
         <button onclick="confirmReady(false)">No</button>
-    </div>
+    </div> -->
 
     <!-- Final Confirmation Popup -->
     <div id="finalPopup" class="popup" style="display:none; z-index: 999;">

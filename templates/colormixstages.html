@@ -9,14 +9,19 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            height: 92.2vh;
             margin: 0;
             position: relative; /* Add relative positioning */
+            /* margin-left: 165px; */
+            border-left: 25px solid rgb(12, 66, 83);
+            border-right: 25px solid rgb(12, 66, 83);
+            border-top: 25px solid rgb(12, 66, 83);
+            border-bottom: 25px solid rgb(12, 66, 83);
         }
         #container {
             text-align: center;
             position: relative;
-            margin-left:65px;
+            margin-left: 180px;
         }
         .colorSquare {
             width: 50px;
@@ -51,10 +56,12 @@
             background-color: #fefefe;
             border: 1px solid #888;
             padding: 20px;
-            width: 20%;
+            width: 40%;
             z-index: 1;
             display: none; /* Hide by default */
-            margin-right:150px;
+            margin-right: 150px;
+            top: 20%;
+            left: 30%;
         }
         #selectedColor {
             width: 150px;
@@ -67,12 +74,68 @@
             margin: 20px auto;
             border: 1px solid black;
         }
+        .popup {
+    position: absolute;
+    background-color: #fefefe;
+    border: 1px solid #888;
+    padding: 20px;
+    width: 15%; /* Adjusted width to 30% */
+    z-index: 1;
+    display: none; /* Hide by default */
+    margin-right: 150px;
+    top: 20%;
+    left: 35%; /* Adjusted left position */
+}
+
         #intensitySlider {
             position: absolute;
             top: 0;
             left: 0;
             margin-top: -20px; /* Adjust margin to make room for the slider */
+            width: 120px;
         }
+        
+        /* Modal styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0, 0, 0); /* Fallback color */
+            background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+            text-align: center;
+        }
+
+        .modal-button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .modal-button:hover {
+            background-color: #45a049;
+        }
+
+        #instructionText {
+            margin-bottom: 20px;
+        }
+
     </style>
 </head>
 <body>
@@ -93,18 +156,30 @@
             <div class="color-circle" style="background-color: #33FF57;" onclick="showPopup('#33FF57')"></div>
             <div class="color-circle" style="background-color: #5733FF;" onclick="showPopup('#5733FF')"></div>
         </div>
-        <button onclick="checkSimilarity()">Check Similarity</button>
+        <button onclick="checkSimilarity()" style="    padding: 5px 10px; /* Adjust padding to increase button size */
+    
+        cursor: pointer;  margin-top:15px; background-color: rgb(107, 186, 250);font-size: 16px;font-weight:500; ">Check Similarity</button>
     </div>
     
-    <div id="colorPopup" class="popup">
+    <div id="colorPopup" class="popup" style="margin-top: 90px;left:42.5%;">
         <h2>Select Intensity</h2>
         <input type="range" id="intensitySlider" min="0" max="100" value="50" oninput="showSelectedColor()">
         <div id="selectedColor"></div>
-        <div id="similarityResult" class="popup" style="display:none;"></div>
+        <div id="similarityResult" class="popup" style="display:none;width:85px;margin-top:250px;margin-left:-40px;background-color: #93cf77;font-weight: bold;"></div>
     </div>
-    
-    <div id="colorBox"></div>
-    
+    <h3 style="margin-top:-180px;margin-left: 400px;">Target Color</h3>
+    <div id="colorBox" style="margin-left:-130px"></div>
+
+   <!-- Modal Structure -->
+<div id="instructionModal" class="modal">
+    <div class="modal-content">
+        <p id="instructionText"></p>
+        <div id="modalButtons">
+            <!-- Buttons will be dynamically added here -->
+        </div>
+    </div>
+</div>
+
     <script>
         function showPopup(color) {
             // Show the popup
@@ -168,16 +243,16 @@
             var similarity_percentage = ((max_distance - color_distance) / max_distance) * 100;
         
             // Display the similarity score
-            document.getElementById('similarityResult').innerText = 'Similarity Score: ' + similarity_percentage.toFixed(2) + '%';
-            document.getElementById('similarityResult').style.display = 'block';
+            // document.getElementById('similarityResult').innerText = 'Similarity Score: ' + similarity_percentage.toFixed(2) + '%';
+            // document.getElementById('similarityResult').style.display = 'block';
         
             // Check if similarity score is above 75
             if (similarity_percentage >= 75) {
                 // Display Congratulations popup after 2 seconds
-                setTimeout(function() {
-                    alert("Congratulations, you have unlocked the next level!");
-                    window.location.href="/stage2_colormixing";
-                }, 2000);
+             
+                    alert('Similarity Score: ' + similarity_percentage.toFixed(2) + '%\nCongratulations, you have unlocked the next level!');
+                    window.location.href = "/mixingcolors";
+              
               
             } else {
                 // Display Try again popup
@@ -259,7 +334,63 @@
         // Set the random color when the page loads
         var randomIndex = Math.floor(Math.random() * colors.length);
         var randomColor = colors[randomIndex];
+        // <div class="randomlabel">Target Color</div>
         document.getElementById('colorBox').style.backgroundColor = randomColor;
+
+        // Function to show the instruction popup
+       
+            var instructions = [
+                "1. You will be provided with a color palette and a target color.",
+                "2. Your aim is to match the target color using the color palette and a slider.",
+                "3. Make sure the similarity score is 75% or above."
+            ];
+
+            var currentInstructionIndex = 0;
+    var instructionText = document.getElementById('instructionText');
+    var modalButtons = document.getElementById('modalButtons');
+    var instructionModal = document.getElementById('instructionModal');
+
+    function showInstructions() {
+        instructionModal.style.display = 'block';
+        updateInstruction();
+    }
+
+    function updateInstruction() {
+        instructionText.innerHTML = instructions[currentInstructionIndex];
+        modalButtons.innerHTML = '';
+        if (currentInstructionIndex > 0) {
+            var backButton = document.createElement('button');
+            backButton.innerHTML = 'Back';
+            backButton.classList.add('modal-button');
+            backButton.onclick = function () {
+                currentInstructionIndex--;
+                updateInstruction();
+            };
+            modalButtons.appendChild(backButton);
+        }
+        if (currentInstructionIndex < instructions.length - 1) {
+            var nextButton = document.createElement('button');
+            nextButton.innerHTML = 'Next';
+            nextButton.classList.add('modal-button');
+            nextButton.onclick = function () {
+                currentInstructionIndex++;
+                updateInstruction();
+            };
+            modalButtons.appendChild(nextButton);
+        } else {
+            var readyButton = document.createElement('button');
+            readyButton.innerHTML = 'I am ready';
+            readyButton.classList.add('modal-button');
+            readyButton.onclick = function () {
+                instructionModal.style.display = 'none';
+                alert('Level 1 unlocked');
+            };
+            modalButtons.appendChild(readyButton);
+        }
+    }
+
+    // Show instructions on page load
+    window.onload = showInstructions;
     </script>
 </body>
 </html>

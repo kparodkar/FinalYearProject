@@ -9,14 +9,19 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+          height: 92.2vh;
+           
+           border-left: 25px solid rgb(12, 66, 83);
+           border-right: 25px solid rgb(12, 66, 83);
+           border-top: 25px solid rgb(12, 66, 83);
+           border-bottom: 25px solid rgb(12, 66, 83);
             margin: 0;
             position: relative; /* Add relative positioning */
         }
         #container {
             text-align: center;
             position: relative;
-            margin-left: 65px;
+            margin-left: 55px;
         }
         .colorSquare {
             width: 150px;
@@ -37,6 +42,7 @@
             align-items: center;
             padding: 10px;
             box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            margin-left:130px;
         }
 
         .color-circle {
@@ -54,7 +60,7 @@
             width: 20%;
             z-index: 1;
             display: none; /* Hide by default */
-            margin-right: 150px;
+            margin-right: -70px;
         }
         #selectedColor {
             width: 100px;
@@ -83,15 +89,87 @@
             margin-left: 20px;
             border: 1px solid black;
             position: absolute; /* Set position to absolute */
-            left: 20px; /* Set left margin */
+            left: 80px; /* Set left margin */
 
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0, 0, 0); /* Fallback color */
+            background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+            text-align: center;
+        }
+
+        .modal-button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .modal-button:hover {
+            background-color: #45a049;
+        }
+
+        #instructionText {
+            margin-bottom: 20px;
+        }
+        #targetColorLabel {
+            position: absolute;
+            left: 129px;
+            top: 191px; /* Adjust as necessary to position above the box */
+            font-weight: bold;
+            font-size: 18px;
+        }
+        #colorbox1label{
+            position: absolute;
+            left: 63px;
+            top: -1px; /* Adjust as necessary to position above the box */
+            font-weight: bold;
+            font-size: 18px;
+        }
+        #colorbox2label{
+            position: absolute;
+            left: 259px;
+            top: -1px; /* Adjust as necessary to position above the box */
+            font-weight: bold;
+            font-size: 18px;
+        }
+        #colorbox3label{
+            position: absolute;
+            left: 440px;
+            top: -1px; /* Adjust as necessary to position above the box */
+            font-weight: bold;
+            font-size: 18px;
         }
     </style>
 </head>
 <body>
     <div id="container">
+        <div id="colorbox1label">Color 1</div>
         <div id="colorBox1"></div>
+        <div id="colorbox2label">Color 2</div>
         <div id="colorBox2"></div>
+        <div id="colorbox3label">Mixed Color</div>
         <div id="colorBox3"></div> <!-- New color box for displaying mixed color -->
         <h3>Click on a color from the palette to select:</h3>
         <div id="colorPalette" class="palette" style="margin-right:-65px">
@@ -109,19 +187,32 @@
             <div class="color-circle" style="background-color: #33FF57;" onclick="showPopup('#33FF57')"></div>
             <div class="color-circle" style="background-color: #5733FF;" onclick="showPopup('#5733FF')"></div>
         </div>
-        <button onclick="mixColors()">Mix Colors</button> <!-- Button to mix colors -->
-        <button onclick="checkSimilarity()">Check Similarity</button>
+        <button onclick="mixColors()" style=" padding: 5px 10px; /* Adjust padding to increase button size */
+    
+        cursor: pointer;  margin-top:22px; background-color: rgb(107, 186, 250);font-size: 16px;font-weight:500;margin-right: 10px; ">Mix Colors</button> <!-- Button to mix colors -->
+        <button onclick="checkSimilarity()" style=" padding: 5px 10px; /* Adjust padding to increase button size */
+    
+        cursor: pointer;  margin-top:22px; background-color: rgb(107, 186, 250);font-size: 16px;font-weight:500; margin-left: 3px;">Check Similarity</button>
     </div>
+    <div id="targetColorLabel">Target Color</div>
     <div id="colorBox"></div>
 
-    <div id="colorPopup" class="popup" style="margin-right:-400px;height:190px;width:150px;margin-top:150px;padding-top:2px">
+    <div id="colorPopup" class="popup" style="margin-right:-630px;height:190px;width:150px;margin-top:170px;padding-top:2px">
         <h2 style="font-size:17px;padding-bottom:4px"> Select Intensity</h2>
         <input type="range" id="intensitySlider" min="0" max="100" value="50" oninput="showSelectedColor()">
         <button id="selectColorBtn" onclick="selectColor()" style="margin-top:-5px" >Select Color</button>
         <div id="selectedColor"></div>
         <div id="similarityResult" class="popup" style="display:none;"></div>
     </div>
-    
+    <!-- Modal Structure -->
+<div id="instructionModal" class="modal">
+    <div class="modal-content">
+        <p id="instructionText"></p>
+        <div id="modalButtons">
+            <!-- Buttons will be dynamically added here -->
+        </div>
+    </div>
+</div>
     <script>
         var selectedSquare = 1;
 
@@ -209,9 +300,24 @@
         
             // Calculate similarity percentage
             var similarityPercentage = calculateSimilarityPercentage(mixedColorRgb, randomColorRgb);
-        
+            
             // Display similarity result
-            alert("Similarity Percentage: " + similarityPercentage.toFixed(2) + "%");
+            if (similarityPercentage >= 75) {
+                // Display Congratulations popup after 2 seconds
+             
+                    alert('Similarity Score: ' + similarityPercentage.toFixed(2) + '%\nCongratulations, you have unlocked the next level!');
+                    window.location.href = "/mixingcolors";
+              
+              
+            } else {
+                // Display Try again popup
+                alert('Similarity Score: ' + similarityPercentage.toFixed(2) + '%\nTry again, you have not passed');
+        
+                // Clear the score
+                document.getElementById('similarityResult').style.display = 'none';
+                // Reset the page
+                
+            }
         }
 
         function parseColor(color) {
@@ -276,12 +382,71 @@
         var colors = ['#d92809', '#e65512', '#ad6f03', '#56d62b', '#64babd', '#071a4a', '#cf51af'];
 
         // Set the random color when the page loads
-        window.onload = function() {
+        // window.onload = function() {
+        //     var randomIndex = Math.floor(Math.random() * colors.length);
+        //     var randomColor = colors[randomIndex];
+        //     document.getElementById('colorBox').style.backgroundColor = randomColor;
+        // };
+// Instructions and modal navigation
+var instructions = [
+"1. You will be provided with a color palette and a target color, and a slider when color is chosen from the pallete.",
+        "2. Your aim is to match the target color by mixing two colors selected from the color palette.",
+        "3. The first color chosen from the palette is displayed in the first square canvas, and the second color is displayed in the square canvas beside it. The mixed color will appear in the third canvas.",
+        "4. Make sure the similarity score is 75% or above."
+    ];
+    
+    var currentInstructionIndex = 0;
+    var instructionText = document.getElementById('instructionText');
+    var modalButtons = document.getElementById('modalButtons');
+    var instructionModal = document.getElementById('instructionModal');
+
+    function showInstructions() {
+        instructionModal.style.display = 'block';
+        updateInstruction();
+    }
+
+    function updateInstruction() {
+        instructionText.innerHTML = instructions[currentInstructionIndex];
+        modalButtons.innerHTML = '';
+        if (currentInstructionIndex > 0) {
+            var backButton = document.createElement('button');
+            backButton.innerHTML = 'Back';
+            backButton.classList.add('modal-button');
+            backButton.onclick = function () {
+                currentInstructionIndex--;
+                updateInstruction();
+            };
+            modalButtons.appendChild(backButton);
+        }
+        if (currentInstructionIndex < instructions.length - 1) {
+            var nextButton = document.createElement('button');
+            nextButton.innerHTML = 'Next';
+            nextButton.classList.add('modal-button');
+            nextButton.onclick = function () {
+                currentInstructionIndex++;
+                updateInstruction();
+            };
+            modalButtons.appendChild(nextButton);
+        } else {
+            var readyButton = document.createElement('button');
+            readyButton.innerHTML = 'I am ready';
+            readyButton.classList.add('modal-button');
+            readyButton.onclick = function () {
+                instructionModal.style.display = 'none';
+                alert('Level 3 unlocked ');
+            };
+            modalButtons.appendChild(readyButton);
+        }
+    }
+
+    // Show instructions on page load
+    window.onload = function() {
             var randomIndex = Math.floor(Math.random() * colors.length);
             var randomColor = colors[randomIndex];
             document.getElementById('colorBox').style.backgroundColor = randomColor;
+            showInstructions();
         };
-
+   
     </script>
 </body>
 </html>
