@@ -94,15 +94,6 @@
             border-radius: 5px;
             border: 1px solid #ccc;
         }
-        #checkSimilarityButton {
-            margin-top: 20px;
-            cursor: pointer;
-            border: 1px solid #000;
-            padding: 5px;
-            text-align: center;
-            background-color: #ddd;
-        }
-
         #highlight-img {
             position: absolute;
             top: 100px;
@@ -129,76 +120,17 @@
             display: none;
             margin-right:10px;
         }
-        .brush-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    margin: 40px 0 0 10px;
-}
-
-.brush-container button {
-    margin-top: 10px;
-    cursor: pointer;
-    border: 1px solid #000;
-    padding: 5px;
-    text-align: center;
-    background-color: #ddd;
-}
-
         #enlarged-cell {
             width: 100%;
             height: 100%;
         }
-         /* Modal styles */
-         .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Sit on top */
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgb(0, 0, 0); /* Fallback color */
-            background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto; /* 15% from the top and centered */
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%; /* Could be more or less, depending on screen size */
-            text-align: center;
-        }
-
-        .modal-button {
-            padding: 10px 20px;
-            margin: 10px;
-            border: none;
-            background-color: #4CAF50;
-            color: white;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        .modal-button:hover {
-            background-color: #45a049;
-        }
-
-        #instructionText {
-            margin-bottom: 20px;
-        }
-
     </style>
 </head>
 <body>
     <div id="container">
         <div id="images-container">
-            <div style="margin-left: 80px;margin-bottom: 2px;font-size: 18px;margin-top:5px;">Original Image</div>
-            <img id="imageDisplayOriginal" style="width:280px;height:210px;margin-top: 2px;" onclick="changeImage()" src="{{ url_for('static', filename='banana_original.png') }}">
-            <div style="margin-left: 120px;margin-bottom: 5px;font-size: 20px;">Segmented Image</div>
-            <img id="imageDisplaySegmented" style="width:380px;height:300px;" onclick="changeImage()" src="{{ url_for('static', filename='banana_segmented.png') }}">
+            <img id="imageDisplayOriginal" onclick="changeImage()" src="{{ url_for('static', filename='banana_original.png') }}">
+            <img id="imageDisplaySegmented" style="width:440px;height: 320px;" onclick="changeImage()" src="{{ url_for('static', filename='banana_segmented.png') }}">
         </div>
         <div id="canvas-container">
             <canvas id="whiteCanvas" width="500" height="400"></canvas>
@@ -207,26 +139,12 @@
         </div>
     </div>
     <div class="palette" id="colorPalette"></div>
-    <div class="brush-container">
-        <div class="brush" id="brush">Brush</div>
-        <button id="checkSimilarityButton">Check Similarity</button>
-    </div>
-
+    <div class="brush" id="brush">Brush</div>
     <div id="pixels-info"></div>
     <img id="highlight-img">
     <div id="enlarged-cell-container">
         <canvas id="enlarged-cell"></canvas>
     </div>
-     <!-- Modal Structure -->
-<div id="instructionModal" class="modal">
-    <div class="modal-content">
-        <p id="instructionText"></p>
-        <div id="modalButtons">
-            <!-- Buttons will be dynamically added here -->
-        </div>
-    </div>
-</div>
-
     <script>
         const images = ['banana_original.png', 'banana_segmented.png'];
         let currentIndex = localStorage.getItem('lastImageIndex') ? parseInt(localStorage.getItem('lastImageIndex')) : 0;
@@ -293,7 +211,7 @@
             paintedPixels.push({ x: Math.floor(x), y: Math.floor(y), color: `rgb(${pixelColor[0]},${pixelColor[1]},${pixelColor[2]})` });
 
             displayPaintedPixels();
-            // calculateSimilarity();
+            calculateSimilarity();
             checkCorrectColor(x, y, pixelColor);
             displayEnlargedCell(x, y); // Update enlarged cell display
         }
@@ -310,7 +228,6 @@
                 ctx.drawImage(img, 0, 0);
             }
             img.src = "{{ url_for('static', filename='sketchgrid_banana.png') }}";
-            showInstructions();
             
         };
 
@@ -347,46 +264,43 @@ colors.forEach((col, index) => {
         }
 
         function calculateSimilarity() {
-        if (!segmentedImgData) return;
+            if (!segmentedImgData) return;
 
-        const totalPixels = paintedPixels.length;
-        let totalDifference = 0;
+            const totalPixels = paintedPixels.length;
+            let totalDifference = 0;
 
-        paintedPixels.forEach(pixel => {
-            const x = pixel.x;
-            const y = pixel.y;
+            paintedPixels.forEach(pixel => {
+                const x = pixel.x;
+                const y = pixel.y;
 
-            const gridX = Math.floor(x / gridSize);
-            const gridY = Math.floor(y / gridSize);
+                const gridX = Math.floor(x / gridSize);
+                const gridY = Math.floor(y / gridSize);
 
-            const paintedPixelColor = ctx.getImageData(x, y, 1, 1).data;
+                const paintedPixelColor = ctx.getImageData(x, y, 1, 1).data;
 
-            const segmentedIndex = (gridY * gridSize * segmentedImg.width + gridX * gridSize + (y % gridSize) * segmentedImg.width + (x % gridSize)) * 4;
-            const segmentedColor = {
-                r: segmentedImgData.data[segmentedIndex],
-                g: segmentedImgData.data[segmentedIndex + 1],
-                b: segmentedImgData.data[segmentedIndex + 2]
-            };
+                const segmentedIndex = (gridY * gridSize * segmentedImg.width + gridX * gridSize + (y % gridSize) * segmentedImg.width + (x % gridSize)) * 4;
+                const segmentedColor = {
+                    r: segmentedImgData.data[segmentedIndex],
+                    g: segmentedImgData.data[segmentedIndex + 1],
+                    b: segmentedImgData.data[segmentedIndex + 2]
+                };
 
-            const difference = Math.sqrt(
-                Math.pow(paintedPixelColor[0] - segmentedColor.r, 2) +
-                Math.pow(paintedPixelColor[1] - segmentedColor.g, 2) +
-                Math.pow(paintedPixelColor[2] - segmentedColor.b, 2)
-            );
+                const difference = Math.sqrt(
+                    Math.pow(paintedPixelColor[0] - segmentedColor.r, 2) +
+                    Math.pow(paintedPixelColor[1] - segmentedColor.g, 2) +
+                    Math.pow(paintedPixelColor[2] - segmentedColor.b, 2)
+                );
 
-            totalDifference += difference;
-        });
+                totalDifference += difference;
+            });
 
-        const averageDifference = totalPixels > 0 ? totalDifference / totalPixels : 0;
+            const averageDifference = totalPixels > 0 ? totalDifference / totalPixels : 0;
 
-        let similarity = Math.min(1, averageDifference / 255);
-        similarity = (1 - similarity) * 100;
+            let similarity = Math.min(1, averageDifference / 255);
+            similarity = (1 - similarity) * 100;
 
-        document.getElementById('similarity-value').textContent = similarity.toFixed(2) + '%';
-    }
-
-    document.getElementById('checkSimilarityButton').addEventListener('click', calculateSimilarity);
-
+            document.getElementById('similarity-value').textContent = similarity.toFixed(2) + '%';
+        }
 
         function highlightSegmentedRegion(x, y) {
     if (!segmentedImgData) return;
@@ -533,62 +447,7 @@ function checkCorrectColor(x, y, pixelColor) {
 
             enlargedCellContainer.style.display = 'block';
         }
-        var instructions = [
-                "1. You will be provided with a reference original image and a segmented image.",
-                "2. Your aim is to try to match your painting on the canvas with the segmented image.",
-                "3. Colors are extracted from the original image and color pallete is provided to you",
-                "4. Colors are numbered in a color pallete so that you know which color to paint on the specific region of the painting.",
-                "5. Grid of 3x3 is put on the canvas and the segmented image and the zooming of each grid on the canvas is taking place on top right corner so that it is easy for you to paint. ",
-                "6. Follow highlighting on the segmented image to know where you are going wrong." ,
-                "7. Make sure the similarity score is 75% or above."
-            ];
 
-            var currentInstructionIndex = 0;
-    var instructionText = document.getElementById('instructionText');
-    var modalButtons = document.getElementById('modalButtons');
-    var instructionModal = document.getElementById('instructionModal');
-
-    function showInstructions() {
-        instructionModal.style.display = 'block';
-        updateInstruction();
-    }
-
-    function updateInstruction() {
-        instructionText.innerHTML = instructions[currentInstructionIndex];
-        modalButtons.innerHTML = '';
-        if (currentInstructionIndex > 0) {
-            var backButton = document.createElement('button');
-            backButton.innerHTML = 'Back';
-            backButton.classList.add('modal-button');
-            backButton.onclick = function () {
-                currentInstructionIndex--;
-                updateInstruction();
-            };
-            modalButtons.appendChild(backButton);
-        }
-        if (currentInstructionIndex < instructions.length - 1) {
-            var nextButton = document.createElement('button');
-            nextButton.innerHTML = 'Next';
-            nextButton.classList.add('modal-button');
-            nextButton.onclick = function () {
-                currentInstructionIndex++;
-                updateInstruction();
-            };
-            modalButtons.appendChild(nextButton);
-        } else {
-            var readyButton = document.createElement('button');
-            readyButton.innerHTML = 'I am ready';
-            readyButton.classList.add('modal-button');
-            readyButton.onclick = function () {
-                instructionModal.style.display = 'none';
-                alert('Level 1 Recreate Painting unlocked');
-            };
-            modalButtons.appendChild(readyButton);
-        }
-    }
-
-    // Show instructions on page load
-    
     </script>
 </body>
 </html>

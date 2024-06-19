@@ -214,7 +214,15 @@
     #selectColorBtn {
         margin-top: 20px;
     }
-    
+    #similarityScore {
+    position: absolute;
+    top: 10px; /* Adjust top position as needed */
+    left: calc(50% - 75px); /* Adjust left position to center it */
+    background-color: white;
+    padding: 5px 10px;
+    border: 1px solid #000;
+}
+
     </style>
 </head>
 <body>
@@ -251,6 +259,7 @@
             </div>
         </form>
     </div>
+    <div id="similarityScore"></div>
     <div id="imageContainer1">
         <canvas id="processedCanvas" width="450" height="400"></canvas>
         <canvas id="drawCanvas" width="450" height="400"></canvas>
@@ -287,9 +296,6 @@
     </div>
     <button id="backButton" onclick="goBack()">Back</button>
     <input type="submit" value="Submit" id="submitButton">
-
-
-
 
     <script>
         function goBack() {
@@ -357,7 +363,7 @@
             };
             palette.appendChild(colorDiv);
         });
-
+        let paintedPixels = [];
         function enableBrushDrawing(drawCanvas, drawCtx, processedCanvas, processedCtx) {
             let painting = false;
             let brushSize = document.getElementById('brushSizeSlider').value;
@@ -384,6 +390,11 @@
                 const mouseX = e.clientX - rect.left;
                 const mouseY = e.clientY - rect.top;
                 
+                paintedPixels.push({ x: mouseX, y: mouseY });
+
+// Update similarity score calculation
+const similarity = calculateSimilarity(drawCanvas, processedCanvas);
+updateSimilarityUI(similarity);
                 if (brushType === 'round_brush') {
                     drawCtx.strokeStyle = selectedColor;
                     drawCtx.lineTo(mouseX, mouseY);
@@ -527,6 +538,68 @@
             }
             return null;
         }
+     // Function to calculate similarity between two canvas images
+function calculateSimilarity(canvas1, canvas2) {
+    // Get the context and image data from both canvases
+    const ctx1 = canvas1.getContext('2d');
+    const ctx2 = canvas2.getContext('2d');
+    const imageData1 = ctx1.getImageData(0, 0, canvas1.width, canvas1.height).data;
+    const imageData2 = ctx2.getImageData(0, 0, canvas2.width, canvas2.height).data;
+
+    // Check if paintedPixels array is empty
+    if (paintedPixels.length === 0) {
+        console.error('No painted pixels to compare.');
+        return 0; // Return 0% similarity if no pixels are painted
+    }
+
+    let totalDifference = 0;
+    let totalPixels = paintedPixels.length;
+
+    // Calculate the luminance similarity for each painted pixel
+    for (let i = 0; i < paintedPixels.length; i++) {
+        const pixel = paintedPixels[i];
+        const index = (pixel.y * canvas1.width + pixel.x) * 4;
+
+        // Get RGB values for each pixel from both canvases
+        const r1 = imageData1[index];
+        const g1 = imageData1[index + 1];
+        const b1 = imageData1[index + 2];
+
+        const r2 = imageData2[index];
+        const g2 = imageData2[index + 1];
+        const b2 = imageData2[index + 2];
+
+        // Calculate the luminance for each pixel
+        const luminance1 = 0.299 * r1 + 0.587 * g1 + 0.114 * b1;
+        const luminance2 = 0.299 * r2 + 0.587 * g2 + 0.114 * b2;
+
+        // Calculate the absolute difference in luminance
+        const difference = Math.abs(luminance1 - luminance2);
+
+        // Accumulate the total difference
+        totalDifference += difference;
+    }
+
+    // Normalize the total difference to a range of 0-100%
+    const maxDifference = totalPixels * 255; // Maximum possible difference (all pixels fully different)
+    const similarity = (100 - (totalDifference / maxDifference * 100))*10;
+
+    // Ensure similarity is within bounds (0-100)
+    return Math.max(0, Math.min(100, similarity));
+}
+
+// Function to update similarity score UI
+function updateSimilarityUI(similarity) {
+    const similarityElement = document.getElementById('similarityScore');
+    similarityElement.textContent = `Similarity: ${similarity.toFixed(2)}%`;
+}
+
+// Function to update similarity score UI
+function updateSimilarityUI(similarity) {
+    const similarityElement = document.getElementById('similarityScore');
+    similarityElement.textContent = `Similarity: ${similarity}%`;
+}
+
     </script>
 </body>
 </html>
