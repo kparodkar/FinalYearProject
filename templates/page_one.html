@@ -222,7 +222,46 @@
     padding: 5px 10px;
     border: 1px solid #000;
 }
+ /* Modal styles */
+ .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0, 0, 0); /* Fallback color */
+            background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+        }
 
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+            text-align: center;
+        }
+
+        .modal-button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .modal-button:hover {
+            background-color: #45a049;
+        }
+
+        #instructionText {
+            margin-bottom: 20px;
+        } 
     </style>
 </head>
 <body>
@@ -296,7 +335,15 @@
     </div>
     <button id="backButton" onclick="goBack()">Back</button>
     <input type="submit" value="Submit" id="submitButton">
-
+<!-- Modal Structure -->
+<div id="instructionModal" class="modal">
+    <div class="modal-content">
+        <p id="instructionText"></p>
+        <div id="modalButtons">
+            <!-- Buttons will be dynamically added here -->
+        </div>
+    </div>
+</div>
     <script>
         function goBack() {
             window.history.back();
@@ -340,6 +387,9 @@
             });
 
             enableBrushDrawing(drawCanvas, drawCtx, processedCanvas, processedCtx);
+            showInstructions();
+            const similarityElement = document.getElementById('similarityScore');
+            similarityElement.textContent = `Similarity:`;
         };
 
         const params = new URLSearchParams(window.location.search);
@@ -599,7 +649,59 @@ function updateSimilarityUI(similarity) {
     const similarityElement = document.getElementById('similarityScore');
     similarityElement.textContent = `Similarity: ${similarity}%`;
 }
+var instructions = [
+        "1. The selected image from your device is displayed in the top left. ",
+"2. You will be provided with fan brush, round brush etc. and an eraser and are allowed to change their sizes.",
+"3. Colors are extracted from the image selected by you and color pallete is provided to you beside painting canvas.",
+"4. Basic color pallete with 12 colors is also provided and after selecting any color from the basic color pallete, you can change the intensity of the color. ",
+"5. You may mix two colors from the basic color pallete and then choose to paint on the canvas,incase the colors from your selected image does not fit your choice or you want to try mixing colors you desire and create a color to paint.",
+            ];
 
+            var currentInstructionIndex = 0;
+    var instructionText = document.getElementById('instructionText');
+    var modalButtons = document.getElementById('modalButtons');
+    var instructionModal = document.getElementById('instructionModal');
+
+    function showInstructions() {
+        instructionModal.style.display = 'block';
+        updateInstruction();
+    }
+
+    function updateInstruction() {
+        instructionText.innerHTML = instructions[currentInstructionIndex];
+        modalButtons.innerHTML = '';
+        if (currentInstructionIndex > 0) {
+            var backButton = document.createElement('button');
+            backButton.innerHTML = 'Back';
+            backButton.classList.add('modal-button');
+            backButton.onclick = function () {
+                currentInstructionIndex--;
+                updateInstruction();
+            };
+            modalButtons.appendChild(backButton);
+        }
+        if (currentInstructionIndex < instructions.length - 1) {
+            var nextButton = document.createElement('button');
+            nextButton.innerHTML = 'Next';
+            nextButton.classList.add('modal-button');
+            nextButton.onclick = function () {
+                currentInstructionIndex++;
+                updateInstruction();
+            };
+            modalButtons.appendChild(nextButton);
+        } else {
+            var readyButton = document.createElement('button');
+            readyButton.innerHTML = 'I am ready';
+            readyButton.classList.add('modal-button');
+            readyButton.onclick = function () {
+                instructionModal.style.display = 'none';
+                alert('Generate Paint Module Unlocked!');
+            };
+            modalButtons.appendChild(readyButton);
+        }
+    }
+
+  
     </script>
 </body>
 </html>
