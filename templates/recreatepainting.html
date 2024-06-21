@@ -154,18 +154,18 @@
     </div>
 
     <div class="card-container">
-        <div class="card" style="background-color:rgb(247, 169, 24)" onclick="redirectToStage1()" onmouseover="showPopup(1)"
-            onmouseout="hidePopup(1)">
-            <span class="lock-icon" style="padding-left:200px">&#x1F512;</span>
-            <h3 style="font-style:italic">Level 1</h3>
-        </div>
-        <a href='/stage2recreate' class="card" style="background-color:rgb(196, 88, 106);text-decoration: none;" onmouseover="showPopup(1)"
+        <a href='/stage1_recreate' class="card" style="background-color:rgb(247, 169, 24);text-decoration: none;" onmouseover="showPopup(1)"
+        onmouseout="hidePopup(1)" > 
+                <span class="lock-icon" style="padding-left:200px">&#x1F512;</span>
+                <h3 style="font-style:italic;color: black;">Level 1</h3>
+            </a>
+        <a href='stage2_recreate.html' class="card" style="background-color:rgb(196, 88, 106);text-decoration: none;" onmouseover="showPopup(1)"
         onmouseout="hidePopup(1)" > 
                 <span class="lock-icon" style="padding-left:200px">&#x1F512;</span>
                 <h3 style="font-style:italic;color: black;">Level 2</h3>
             </a>
     </div>
-    <!-- rgb(196, 88, 106) -->
+    <!-- rgb(196, 88, 106)(247, 169, 24) --> 
     <!-- Popup for Level 1 -->
     <!--<div id="popup1" class="popup" style="z-index: 999;">
         <p id="step1">1. You will be provided with color palette and a target color.</p>
@@ -193,70 +193,6 @@
         <span class="lock-icon" id="unlockIcon"
             style="font-size: 48px; color: #999; margin-left:175px ;margin-top:-10px">&#x1F513;</span>
     </div>
-
-    <!-- Script to show and hide popups -->
-    <script>
-        
-            function redirectToStage1() {
-                window.location.href = "/stage1_recreate";
-            }
-        
-        
-        function showPopup(level) {
-            document.getElementById('popup' + level).style.display = 'block';
-        }
-
-        function hidePopup(level) {
-            document.getElementById('popup' + level).style.display = 'none';
-        }
-
-        function nextStep(level) {
-            var step1 = document.getElementById('step1');
-            var step2 = document.getElementById('step2');
-            var step3 = document.getElementById('step3');
-
-            var nextButton = document.getElementById('nextButton');
-            var nextButton2 = document.getElementById('nextButton2');
-
-            if (level === 1) {
-                step1.style.display = 'none';
-                step2.style.display = 'block';
-                nextButton.style.display = 'none';
-
-                document.getElementById('popup2').style.display = 'block';
-            } else if (level === 2) {
-                step2.style.display = 'none';
-                document.getElementById('readyPopup').style.display = 'block';
-            }
-        }
-
-        function confirmReady(choice) {
-            if (choice) {
-                // Show "Level 1 unlocked" text
-                document.getElementById('unlockText').innerText = 'LEVEL 1 UNLOCKED';
-
-                // Show unlock icon for 2 seconds
-                document.getElementById('finalPopup').style.display = 'block';
-
-                // Hide the final popup after 2 seconds
-                setTimeout(function () {
-                    document.getElementById('finalPopup').style.display = 'none';
-                    // Redirect to the next page here
-                    window.location.href = "/col_mixstage1"; // Replace 'next_page.html' with the actual URL of the next page
-                }, 1000);
-            } else {
-                // Reset popup to step 1
-                document.getElementById('popup1').style.display = 'block';
-                document.getElementById('popup2').style.display = 'none';
-                document.getElementById('readyPopup').style.display = 'none';
-                document.getElementById('step1').style.display = 'block';
-                document.getElementById('step2').style.display = 'none';
-                document.getElementById('nextButton').style.display = 'block';
-            }
-        }
-    </script>
-
-
 </body>
 
 </html>

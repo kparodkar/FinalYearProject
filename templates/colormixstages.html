@@ -256,7 +256,9 @@
               
             } else {
                 // Display Try again popup
-                alert("Try again, you have not passed");
+                alert('Similarity Score: ' + similarity_percentage.toFixed(2) + '%\nTry again, you have not passed');
+
+                // alert("Try again, you have not passed");
         
                 // Clear the score
                 document.getElementById('similarityResult').style.display = 'none';
