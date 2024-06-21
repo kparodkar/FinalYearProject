@@ -196,9 +196,9 @@
     <div id="container">
         <div id="images-container">
             <div style="margin-left: 80px;margin-bottom: 2px;font-size: 18px;margin-top:5px;">Original Image</div>
-            <img id="imageDisplayOriginal" style="width:280px;height:210px;margin-top: 2px;" onclick="changeImage()" src="{{ url_for('static', filename='banana_original.png') }}">
+            <img id="imageDisplayOriginal" style="width:280px;height:210px;margin-top: 2px;" onclick="changeImage()" src="{{ url_for('static', filename='Apple.jpeg') }}">
             <div style="margin-left: 120px;margin-bottom: 5px;font-size: 20px;">Segmented Image</div>
-            <img id="imageDisplaySegmented" style="width:380px;height:300px;" onclick="changeImage()" src="{{ url_for('static', filename='banana_segmented.png') }}">
+            <img id="imageDisplaySegmented" style="width:380px;height:300px;" onclick="changeImage()" src="{{ url_for('static', filename='Apple_segmented.png') }}">
         </div>
         <div id="canvas-container">
             <canvas id="whiteCanvas" width="500" height="400"></canvas>
@@ -232,7 +232,7 @@
 </div>
 
     <script>
-        const images = ['banana_original.png', 'banana_segmented.png'];
+        const images = ['Apple.jpeg', 'Apple_segmented.png'];
         let currentIndex = localStorage.getItem('lastImageIndex') ? parseInt(localStorage.getItem('lastImageIndex')) : 0;
 
         function changeImage() {
@@ -258,7 +258,7 @@
         let segmentedImgData = null;
 
         const segmentedImg = new Image();
-        segmentedImg.src = "{{ url_for('static', filename='banana_segmented.png') }}";
+        segmentedImg.src = "{{ url_for('static', filename='Apple_segmented.png') }}";
         segmentedImg.onload = function() {
             const offscreenCanvas = document.createElement('canvas');
             const offscreenCtx = offscreenCanvas.getContext('2d');
@@ -313,7 +313,7 @@
             img.onload = function() {
                 ctx.drawImage(img, 0, 0);
             }
-            img.src = "{{ url_for('static', filename='sketchgrid_banana.png') }}";
+            img.src = "{{ url_for('static', filename='Apple_sketchgrid.jpeg') }}";
             showInstructions();
             
         };
