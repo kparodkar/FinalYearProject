@@ -354,17 +354,11 @@ drawLabels();
             }
     }
     function reloadPageAndExecuteDefault() {
-    // Reload the page
+     // Reload the page
+     window.location.reload();
 
-    // Perform actions that should happen on page load
-    const canvas = document.getElementById('whiteCanvas');
-    const ctx = canvas.getContext('2d');
-    const img = new Image();
-    img.onload = function() {
-        ctx.drawImage(img, 0, 0);
-    };
-    img.src = "{{ url_for('static', filename='sketchgrid_banana.png') }}";
-    // showInstructions(); // Example function call from window.onload
+// Optionally, clear any displayed instructions
+instructionModal.style.display = 'none';
 }
 
     function hexToRgb(hex) {
