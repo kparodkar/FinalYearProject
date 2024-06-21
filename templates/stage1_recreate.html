@@ -351,60 +351,76 @@ colors.forEach((col, index) => {
         }
 
         function calculateSimilarity() {
-        if (!segmentedImgData) return;
+    if (!segmentedImgData) return;
 
-        const totalPixels = paintedPixels.length;
-        let totalDifference = 0;
+    const totalPixels = paintedPixels.length;
 
-        paintedPixels.forEach(pixel => {
-            const x = pixel.x;
-            const y = pixel.y;
-
-            const gridX = Math.floor(x / gridSize);
-            const gridY = Math.floor(y / gridSize);
-
-            const paintedPixelColor = ctx.getImageData(x, y, 1, 1).data;
-
-            const segmentedIndex = (gridY * gridSize * segmentedImg.width + gridX * gridSize + (y % gridSize) * segmentedImg.width + (x % gridSize)) * 4;
-            const segmentedColor = {
-                r: segmentedImgData.data[segmentedIndex],
-                g: segmentedImgData.data[segmentedIndex + 1],
-                b: segmentedImgData.data[segmentedIndex + 2]
-            };
-
-            const difference = Math.sqrt(
-                Math.pow(paintedPixelColor[0] - segmentedColor.r, 2) +
-                Math.pow(paintedPixelColor[1] - segmentedColor.g, 2) +
-                Math.pow(paintedPixelColor[2] - segmentedColor.b, 2)
-            );
-
-            totalDifference += difference;
-        });
-
-        const averageDifference = totalPixels > 0 ? totalDifference / totalPixels : 0;
-
-        let similarity = Math.min(1, averageDifference / 255);
-        similarity = (1 - similarity) * 100;
-
-        document.getElementById('similarity-value').textContent = similarity.toFixed(2) + '%';
-        if (similarity >= 75) {
-                // Display Congratulations popup after 2 seconds
-             
-                    alert('Similarity Score: ' + similarity.toFixed(2) + '%\nCongratulations, you have unlocked the next level!');
-                    window.location.href = "/recreatepainting";
-              
-              
-            } else {
-                // Display Try again popup
-                alert('Similarity Score: ' + similarity.toFixed(2) + '%\nTry again, you have not passed!');
-                // Clear the score
-                document.getElementById('similarity-info').style.display = 'none';
-                // Reset the page
-                resetPage();
-            }
+    if (totalPixels === 0) {
+        alert('Similarity Score: 0.00%\nTry again, you have not passed!');
+        return;
     }
 
-    document.getElementById('checkSimilarityButton').addEventListener('click', calculateSimilarity);
+    let totalDifference = 0;
+
+    paintedPixels.forEach(pixel => {
+        const x = pixel.x;
+        const y = pixel.y;
+
+        const gridX = Math.floor(x / gridSize);
+        const gridY = Math.floor(y / gridSize);
+
+        const paintedPixelColor = ctx.getImageData(x, y, 1, 1).data;
+
+        const segmentedIndex = (gridY * gridSize * segmentedImg.width + gridX * gridSize + (y % gridSize) * segmentedImg.width + (x % gridSize)) * 4;
+        const segmentedColor = {
+            r: segmentedImgData.data[segmentedIndex],
+            g: segmentedImgData.data[segmentedIndex + 1],
+            b: segmentedImgData.data[segmentedIndex + 2]
+        };
+
+        const difference = Math.sqrt(
+            Math.pow(paintedPixelColor[0] - segmentedColor.r, 2) +
+            Math.pow(paintedPixelColor[1] - segmentedColor.g, 2) +
+            Math.pow(paintedPixelColor[2] - segmentedColor.b, 2)
+        );
+
+        totalDifference += difference;
+    });
+
+    const averageDifference = totalDifference / totalPixels;
+
+    let similarity = Math.min(1, averageDifference / 255);
+    similarity = (1 - similarity) * 100;
+
+    if (similarity >= 75) {
+        alert('Similarity Score: ' + similarity.toFixed(2) + '%\nCongratulations, you have unlocked the next level!');
+        window.location.href = "/recreatepainting";
+    } else {
+        alert('Similarity Score: ' + similarity.toFixed(2) + '%\nTry again, you have not passed!');
+        reloadPageAndExecuteDefault(); 
+        resetPage();
+    }
+}
+
+document.getElementById('checkSimilarityButton').addEventListener('click', calculateSimilarity);
+function reloadPageAndExecuteDefault() {
+    // Reload the page
+
+    // Perform actions that should happen on page load
+    const canvas = document.getElementById('whiteCanvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    img.onload = function() {
+        ctx.drawImage(img, 0, 0);
+    };
+    img.src = "{{ url_for('static', filename='sketchgrid_banana.png') }}";
+    // showInstructions(); // Example function call from window.onload
+}
+function clearCanvas() {
+    const canvas = document.getElementById('myCanvas');
+    const context = canvas.getContext('2d');
+    context.clearRect(0, 0, canvas.width, canvas.height);
+}
 
 
         function highlightSegmentedRegion(x, y) {
@@ -601,6 +617,7 @@ function checkCorrectColor(x, y, pixelColor) {
             readyButton.onclick = function () {
                 instructionModal.style.display = 'none';
                 alert('Level 1 Recreate Painting unlocked');
+                
             };
             modalButtons.appendChild(readyButton);
         }

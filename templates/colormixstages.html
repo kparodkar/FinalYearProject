@@ -257,16 +257,37 @@
             } else {
                 // Display Try again popup
                 alert('Similarity Score: ' + similarity_percentage.toFixed(2) + '%\nTry again, you have not passed');
-
+                reloadPageAndExecuteDefault(); 
                 // alert("Try again, you have not passed");
         
                 // Clear the score
                 document.getElementById('similarityResult').style.display = 'none';
+                
                 // Reset the page
                 resetPage();
             }
         }
-        
+        function reloadPageAndExecuteDefault() {
+    // Reload the page
+   
+
+    // Reset the similarity calculated flag to false
+    similarityCalculated = false;
+
+    // Reset the selected color and hide the color popup
+    document.getElementById('selectedColor').style.backgroundColor = '';
+    document.getElementById('colorPopup').style.display = 'none';
+
+    // Reset the page to show a new random target color
+    var randomIndex = Math.floor(Math.random() * colors.length);
+    var randomColor = colors[randomIndex];
+    document.getElementById('colorBox').style.backgroundColor = randomColor;
+
+    // Clear the similarity result display
+    document.getElementById('similarityResult').style.display = 'none';
+}
+
+
         function resetPage() {
             // Hide the color popup
             document.getElementById('colorPopup').style.display = 'none';
@@ -393,6 +414,7 @@
 
     // Show instructions on page load
     window.onload = showInstructions;
+    
     </script>
 </body>
 </html>

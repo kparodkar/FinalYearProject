@@ -312,14 +312,27 @@
             } else {
                 // Display Try again popup
                 alert('Similarity Score: ' + similarityPercentage.toFixed(2) + '%\nTry again, you have not passed');
-        
+                
                 // Clear the score
                 document.getElementById('similarityResult').style.display = 'none';
+                reloadPageAndExecuteDefault(); 
                 // Reset the page
                 
             }
         }
+        function reloadPageAndExecuteDefault() {
+    // Reload the page
 
+    // Perform actions that should happen on page load
+    const canvas = document.getElementById('whiteCanvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    img.onload = function() {
+        ctx.drawImage(img, 0, 0);
+    };
+    img.src = "{{ url_for('static', filename='sketchgrid_banana.png') }}";
+    // showInstructions(); // Example function call from window.onload
+}
         function parseColor(color) {
             var match = color.match(/rgb\((\d+), (\d+), (\d+)\)/);
             if (match) {
