@@ -199,8 +199,8 @@
         margin-top: 20px;
     }
     #colorBox1, #colorBox2, #colorBox3 {
-        width: 50px;
-        height: 50px;
+        width: 60px;
+        height: 60px;
         margin: 130px 30px; /* Increase top margin to bring them down */
         border: 1px solid black;
         display: inline-block;
@@ -266,6 +266,7 @@
 </head>
 <body>
     <div id="imageContainer">
+        
         <div id="originalImageContainer">
             <!-- This is where the original image will be displayed -->
         </div>
@@ -305,9 +306,9 @@
     </div>
     <div class="palette" id="colorPalette"></div>
     <div id="container1">
-        <div id="colorBox1"></div>
-        <div id="colorBox2"></div>
-        <div id="colorBox3" onclick="selectMixedColor()"></div> <!-- New color box for displaying mixed color -->
+        <div id="colorBox1" >Color 1</div>
+        <div id="colorBox2">Color 2</div>
+        <div id="colorBox3" onclick="selectMixedColor()">Mixed</div> <!-- New color box for displaying mixed color -->
         <div id="colorPalette" class="palette1" style="margin-right:-65px">
             <!-- Loop through the colors and create circles -->
             <div class="color-circle" style="background-color: #FF5733;" onclick="showPopup('#FF5733')"></div>
