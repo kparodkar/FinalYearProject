@@ -589,53 +589,72 @@ updateSimilarityUI(similarity);
             return null;
         }
      // Function to calculate similarity between two canvas images
-function calculateSimilarity(canvas1, canvas2) {
-    // Get the context and image data from both canvases
-    const ctx1 = canvas1.getContext('2d');
-    const ctx2 = canvas2.getContext('2d');
-    const imageData1 = ctx1.getImageData(0, 0, canvas1.width, canvas1.height).data;
-    const imageData2 = ctx2.getImageData(0, 0, canvas2.width, canvas2.height).data;
+     function calculateSimilarity(drawCanvas, processedCanvas) {
+    const drawCtx = drawCanvas.getContext('2d');
+    const processedCtx = processedCanvas.getContext('2d');
 
-    // Check if paintedPixels array is empty
-    if (paintedPixels.length === 0) {
-        console.error('No painted pixels to compare.');
-        return 0; // Return 0% similarity if no pixels are painted
+    // Get image data from both canvases
+    const drawImageData = drawCtx.getImageData(0, 0, drawCanvas.width, drawCanvas.height);
+    const processedImageData = processedCtx.getImageData(0, 0, processedCanvas.width, processedCanvas.height);
+
+    const drawData = drawImageData.data;
+    const processedData = processedImageData.data;
+
+    // Convert image data to grayscale
+    const drawGray = toGrayscale(drawData, drawCanvas.width, drawCanvas.height);
+    const processedGray = toGrayscale(processedData, processedCanvas.width, processedCanvas.height);
+
+    // Compute SSIM between the two grayscale images
+    const ssimValue = computeSSIM(drawGray, processedGray, drawCanvas.width, drawCanvas.height);
+    
+    // Return SSIM value as percentage
+    return (ssimValue * 10000).toFixed(1);
+}
+
+function toGrayscale(imageData, width, height) {
+    const grayData = new Float32Array(width * height);
+
+    for (let i = 0; i < imageData.length; i += 4) {
+        const r = imageData[i];
+        const g = imageData[i + 1];
+        const b = imageData[i + 2];
+        // Luminance calculation
+        grayData[i / 4] = 0.299 * r + 0.587 * g + 0.114 * b;
     }
 
-    let totalDifference = 0;
-    let totalPixels = paintedPixels.length;
+    return grayData;
+}
 
-    // Calculate the luminance similarity for each painted pixel
-    for (let i = 0; i < paintedPixels.length; i++) {
-        const pixel = paintedPixels[i];
-        const index = (pixel.y * canvas1.width + pixel.x) * 4;
+function computeSSIM(img1, img2, width, height) {
+    const C1 = 6.5025;
+    const C2 = 58.5225;
+    
+    let mu1 = 0, mu2 = 0, sigma1_sq = 0, sigma2_sq = 0, sigma12 = 0;
 
-        // Get RGB values for each pixel from both canvases
-        const r1 = imageData1[index];
-        const g1 = imageData1[index + 1];
-        const b1 = imageData1[index + 2];
+    const totalPixels = width * height;
 
-        const r2 = imageData2[index];
-        const g2 = imageData2[index + 1];
-        const b2 = imageData2[index + 2];
-
-        // Calculate the luminance for each pixel
-        const luminance1 = 0.299 * r1 + 0.587 * g1 + 0.114 * b1;
-        const luminance2 = 0.299 * r2 + 0.587 * g2 + 0.114 * b2;
-
-        // Calculate the absolute difference in luminance
-        const difference = Math.abs(luminance1 - luminance2);
-
-        // Accumulate the total difference
-        totalDifference += difference;
+    for (let i = 0; i < totalPixels; i++) {
+        mu1 += img1[i];
+        mu2 += img2[i];
     }
+    
+    mu1 /= totalPixels;
+    mu2 /= totalPixels;
 
-    // Normalize the total difference to a range of 0-100%
-    const maxDifference = totalPixels * 255; // Maximum possible difference (all pixels fully different)
-    const similarity = (100 - (totalDifference / maxDifference * 100))*10;
+    for (let i = 0; i < totalPixels; i++) {
+        sigma1_sq += Math.pow(img1[i] - mu1, 2);
+        sigma2_sq += Math.pow(img2[i] - mu2, 2);
+        sigma12 += (img1[i] - mu1) * (img2[i] - mu2);
+    }
+    
+    sigma1_sq /= totalPixels - 1;
+    sigma2_sq /= totalPixels - 1;
+    sigma12 /= totalPixels - 1;
 
-    // Ensure similarity is within bounds (0-100)
-    return Math.max(0, Math.min(100, similarity));
+    const ssim = ((2 * mu1 * mu2 + C1) * (2 * sigma12 + C2)) /
+                 ((Math.pow(mu1, 2) + Math.pow(mu2, 2) + C1) * (sigma1_sq + sigma2_sq + C2));
+
+    return ssim;
 }
 
 // Function to update similarity score UI
