@@ -199,8 +199,8 @@
         margin-top: 20px;
     }
     #colorBox1, #colorBox2, #colorBox3 {
-        width: 50px;
-        height: 50px;
+        width: 60px;
+        height: 60px;
         margin: 130px 30px; /* Increase top margin to bring them down */
         border: 1px solid black;
         display: inline-block;
@@ -222,11 +222,51 @@
     padding: 5px 10px;
     border: 1px solid #000;
 }
+ /* Modal styles */
+ .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0, 0, 0); /* Fallback color */
+            background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+        }
 
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+            text-align: center;
+        }
+
+        .modal-button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .modal-button:hover {
+            background-color: #45a049;
+        }
+
+        #instructionText {
+            margin-bottom: 20px;
+        } 
     </style>
 </head>
 <body>
     <div id="imageContainer">
+        
         <div id="originalImageContainer">
             <!-- This is where the original image will be displayed -->
         </div>
@@ -266,9 +306,9 @@
     </div>
     <div class="palette" id="colorPalette"></div>
     <div id="container1">
-        <div id="colorBox1"></div>
-        <div id="colorBox2"></div>
-        <div id="colorBox3" onclick="selectMixedColor()"></div> <!-- New color box for displaying mixed color -->
+        <div id="colorBox1" >Color 1</div>
+        <div id="colorBox2">Color 2</div>
+        <div id="colorBox3" onclick="selectMixedColor()">Mixed</div> <!-- New color box for displaying mixed color -->
         <div id="colorPalette" class="palette1" style="margin-right:-65px">
             <!-- Loop through the colors and create circles -->
             <div class="color-circle" style="background-color: #FF5733;" onclick="showPopup('#FF5733')"></div>
@@ -296,7 +336,15 @@
     </div>
     <button id="backButton" onclick="goBack()">Back</button>
     <input type="submit" value="Submit" id="submitButton">
-
+<!-- Modal Structure -->
+<div id="instructionModal" class="modal">
+    <div class="modal-content">
+        <p id="instructionText"></p>
+        <div id="modalButtons">
+            <!-- Buttons will be dynamically added here -->
+        </div>
+    </div>
+</div>
     <script>
         function goBack() {
             window.history.back();
@@ -340,6 +388,9 @@
             });
 
             enableBrushDrawing(drawCanvas, drawCtx, processedCanvas, processedCtx);
+            showInstructions();
+            const similarityElement = document.getElementById('similarityScore');
+            similarityElement.textContent = `Similarity:`;
         };
 
         const params = new URLSearchParams(window.location.search);
@@ -365,36 +416,47 @@
         });
         let paintedPixels = [];
         function enableBrushDrawing(drawCanvas, drawCtx, processedCanvas, processedCtx) {
-            let painting = false;
-            let brushSize = document.getElementById('brushSizeSlider').value;
-        
-            function startPosition(e) {
-                painting = true;
-                draw(e);
-            }
-        
-            function endPosition() {
-                painting = false;
-                drawCtx.beginPath();
-            }
-        
-            function draw(e) {
-                if (!painting) return;
-                brushSize = document.getElementById('brushSizeSlider').value;
-                drawCtx.lineWidth = brushSize;
-                drawCtx.lineCap = 'round';
-                const brushType = document.querySelector('input[name="brush"]:checked').value;
-                const fanBrushAngle = document.getElementById('fanBrushAngleSlider').value;
-                
-                const rect = drawCanvas.getBoundingClientRect();
-                const mouseX = e.clientX - rect.left;
-                const mouseY = e.clientY - rect.top;
-                
-                paintedPixels.push({ x: mouseX, y: mouseY });
+  let painting = false;
+  let brushSize = document.getElementById('brushSizeSlider').value;
 
-// Update similarity score calculation
-const similarity = calculateSimilarity(drawCanvas, processedCanvas);
-updateSimilarityUI(similarity);
+  function startPosition(e) {
+    painting = true;
+    draw(e);
+  }
+
+  function endPosition() {
+    painting = false;
+    drawCtx.beginPath();
+  }
+
+  function draw(e) {
+    if (!painting) return;
+    brushSize = document.getElementById('brushSizeSlider').value;
+    drawCtx.lineWidth = brushSize;
+    drawCtx.lineCap = 'round';
+    const brushType = document.querySelector('input[name="brush"]:checked').value;
+    const fanBrushAngle = document.getElementById('fanBrushAngleSlider').value;
+
+    const rect = drawCanvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    paintedPixels.push({ x: mouseX, y: mouseY });
+
+    // Get the color of the pixel at the current coordinate on the original image
+    const originalImageData = processedCtx.getImageData(mouseX, mouseY, 1, 1);
+    const originalColor = originalImageData.data;
+
+    // Get the color of the pixel at the current coordinate on the painted canvas
+    const drawImageData = drawCtx.getImageData(mouseX, mouseY, 1, 1);
+    const drawColor = drawImageData.data;
+
+    // Calculate the similarity between the two colors
+    const similarity = calculateColorSimilarity(originalColor, drawColor);
+
+    // Update the similarity score UI
+    updateSimilarityUI(similarity);
+
                 if (brushType === 'round_brush') {
                     drawCtx.strokeStyle = selectedColor;
                     drawCtx.lineTo(mouseX, mouseY);
@@ -538,56 +600,14 @@ updateSimilarityUI(similarity);
             }
             return null;
         }
-     // Function to calculate similarity between two canvas images
-function calculateSimilarity(canvas1, canvas2) {
-    // Get the context and image data from both canvases
-    const ctx1 = canvas1.getContext('2d');
-    const ctx2 = canvas2.getContext('2d');
-    const imageData1 = ctx1.getImageData(0, 0, canvas1.width, canvas1.height).data;
-    const imageData2 = ctx2.getImageData(0, 0, canvas2.width, canvas2.height).data;
+        function calculateColorSimilarity(color1, color2) {
+  const rDiff = Math.abs(color1[0] - color2[0]);
+  const gDiff = Math.abs(color1[1] - color2[1]);
+  const bDiff = Math.abs(color1[2] - color2[2]);
 
-    // Check if paintedPixels array is empty
-    if (paintedPixels.length === 0) {
-        console.error('No painted pixels to compare.');
-        return 0; // Return 0% similarity if no pixels are painted
-    }
-
-    let totalDifference = 0;
-    let totalPixels = paintedPixels.length;
-
-    // Calculate the luminance similarity for each painted pixel
-    for (let i = 0; i < paintedPixels.length; i++) {
-        const pixel = paintedPixels[i];
-        const index = (pixel.y * canvas1.width + pixel.x) * 4;
-
-        // Get RGB values for each pixel from both canvases
-        const r1 = imageData1[index];
-        const g1 = imageData1[index + 1];
-        const b1 = imageData1[index + 2];
-
-        const r2 = imageData2[index];
-        const g2 = imageData2[index + 1];
-        const b2 = imageData2[index + 2];
-
-        // Calculate the luminance for each pixel
-        const luminance1 = 0.299 * r1 + 0.587 * g1 + 0.114 * b1;
-        const luminance2 = 0.299 * r2 + 0.587 * g2 + 0.114 * b2;
-
-        // Calculate the absolute difference in luminance
-        const difference = Math.abs(luminance1 - luminance2);
-
-        // Accumulate the total difference
-        totalDifference += difference;
-    }
-
-    // Normalize the total difference to a range of 0-100%
-    const maxDifference = totalPixels * 255; // Maximum possible difference (all pixels fully different)
-    const similarity = (100 - (totalDifference / maxDifference * 100))*10;
-
-    // Ensure similarity is within bounds (0-100)
-    return Math.max(0, Math.min(100, similarity));
+  const similarity = 1 - (rDiff + gDiff + bDiff) / (3 * 255);
+  return similarity * 100;
 }
-
 // Function to update similarity score UI
 function updateSimilarityUI(similarity) {
     const similarityElement = document.getElementById('similarityScore');
@@ -599,7 +619,59 @@ function updateSimilarityUI(similarity) {
     const similarityElement = document.getElementById('similarityScore');
     similarityElement.textContent = `Similarity: ${similarity}%`;
 }
+var instructions = [
+        "1. The selected image from your device is displayed in the top left. ",
+"2. You will be provided with fan brush, round brush etc. and an eraser and are allowed to change their sizes.",
+"3. Colors are extracted from the image selected by you and color pallete is provided to you beside painting canvas.",
+"4. Basic color pallete with 12 colors is also provided and after selecting any color from the basic color pallete, you can change the intensity of the color. ",
+"5. You may mix two colors from the basic color pallete and then choose to paint on the canvas,incase the colors from your selected image does not fit your choice or you want to try mixing colors you desire and create a color to paint.",
+            ];
 
+            var currentInstructionIndex = 0;
+    var instructionText = document.getElementById('instructionText');
+    var modalButtons = document.getElementById('modalButtons');
+    var instructionModal = document.getElementById('instructionModal');
+
+    function showInstructions() {
+        instructionModal.style.display = 'block';
+        updateInstruction();
+    }
+
+    function updateInstruction() {
+        instructionText.innerHTML = instructions[currentInstructionIndex];
+        modalButtons.innerHTML = '';
+        if (currentInstructionIndex > 0) {
+            var backButton = document.createElement('button');
+            backButton.innerHTML = 'Back';
+            backButton.classList.add('modal-button');
+            backButton.onclick = function () {
+                currentInstructionIndex--;
+                updateInstruction();
+            };
+            modalButtons.appendChild(backButton);
+        }
+        if (currentInstructionIndex < instructions.length - 1) {
+            var nextButton = document.createElement('button');
+            nextButton.innerHTML = 'Next';
+            nextButton.classList.add('modal-button');
+            nextButton.onclick = function () {
+                currentInstructionIndex++;
+                updateInstruction();
+            };
+            modalButtons.appendChild(nextButton);
+        } else {
+            var readyButton = document.createElement('button');
+            readyButton.innerHTML = 'I am ready';
+            readyButton.classList.add('modal-button');
+            readyButton.onclick = function () {
+                instructionModal.style.display = 'none';
+                alert('Generate Paint Module Unlocked!');
+            };
+            modalButtons.appendChild(readyButton);
+        }
+    }
+
+  
     </script>
 </body>
 </html>

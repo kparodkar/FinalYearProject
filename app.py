@@ -324,7 +324,9 @@ def stage2colmix():
 @app.route('/stage1_recreate')
 def stage1_recreate():
     return render_template('stage1_recreate.html') 
-
+@app.route('/stage2_recreate')
+def stage2_recreate():
+    return render_template('stage2_recreate.html')
 @app.route('/stage3_learnpaint')
 def stage3_learnpaint():
     return render_template('stage3_learnpaint.html') 

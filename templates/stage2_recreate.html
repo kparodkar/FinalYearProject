@@ -199,9 +199,9 @@
         </div>
         <div id="images-container">
             <div style="margin-left: 80px;margin-bottom: 2px;font-size: 18px;margin-top:5px;">Original Image</div>
-            <img id="imageDisplayOriginal" style="width:280px;height:210px;margin-top: 2px;" onclick="changeImage()" src="{{ url_for('static', filename='banana_original.png') }}">
+            <img id="imageDisplayOriginal" style="width:280px;height:210px;margin-top: 2px;" onclick="changeImage()" src="{{ url_for('static', filename='Apple.jpeg') }}">
             <div style="margin-left: 120px;margin-bottom: 5px;font-size: 20px;">Segmented Image</div>
-            <img id="imageDisplaySegmented" style="width:380px;height:300px;" onclick="changeImage()" src="{{ url_for('static', filename='banana_segmented.png') }}">
+            <img id="imageDisplaySegmented" style="width:380px;height:300px;" onclick="changeImage()" src="{{ url_for('static', filename='Apple_segmented.png') }}">
         </div>
         <div id="canvas-container">
             <canvas id="whiteCanvas" width="500" height="400"></canvas>
@@ -214,7 +214,7 @@
         <div class="brush" id="brush" style="    padding: 5px 10px; /* Adjust padding to increase button size */
     
         cursor: pointer;  margin-top:15px; background-color: rgb(107, 186, 250);font-size: 16px;font-weight:500; ">Brush</div>
-        <button id="checkSimilarityButton" style="    padding: 5px 10px; /* Adjust padding to increase button size */
+        <button id="checkSimilarityButton" onclick="calculateSimilarity()"  style="padding: 5px 10px; /* Adjust padding to increase button size */
     
         cursor: pointer;  margin-top:15px; background-color: rgb(107, 186, 250);font-size: 16px;font-weight:500; ">Check Similarity</button>
     </div>
@@ -235,7 +235,7 @@
 </div>
 
     <script>
-        const images = ['banana_original.png', 'banana_segmented.png'];
+        const images = ['Apple.jpeg', 'Apple_segmented.png'];
         let currentIndex = localStorage.getItem('lastImageIndex') ? parseInt(localStorage.getItem('lastImageIndex')) : 0;
 
         function changeImage() {
@@ -261,7 +261,7 @@
         let segmentedImgData = null;
 
         const segmentedImg = new Image();
-        segmentedImg.src = "{{ url_for('static', filename='banana_segmented.png') }}";
+        segmentedImg.src = "{{ url_for('static', filename='Apple_segmented.png') }}";
         segmentedImg.onload = function() {
             const offscreenCanvas = document.createElement('canvas');
             const offscreenCtx = offscreenCanvas.getContext('2d');
@@ -316,12 +316,12 @@
             img.onload = function() {
                 ctx.drawImage(img, 0, 0);
             }
-            img.src = "{{ url_for('static', filename='sketchgrid_banana.png') }}";
+            img.src = "{{ url_for('static', filename='Apple_sketchgrid.jpeg') }}";
             showInstructions();
             
         };
 
-        const colors = ['#61472B','#D7A81D', '#DDAB11', '#E0BB47', '#ECBF1F', '#F3CD3A', ' #F1CD46', '#F7D551', '#F7DE75', '#F7DE75', '#FBE7AE','#FFFFFF']; 
+        const colors = ['#7B070A','#B41217', '#DC5B5A', '#F19692', '#CF4545','#6EBC3F','#36890F','3D8F14', '#33860C', ' #DE6260', '#EF938F', '#B51418', '#E67A77', '#AD1015','#9C0D11','#BD2326','#C22A2D','#B21116',]; 
 
 const palette = document.getElementById('colorPalette');
 
@@ -405,7 +405,6 @@ colors.forEach((col, index) => {
               alert('Thank you! You did great job! ');
                 window.location.href = "/recreatepainting";  }
         }
-
     } else {
         alert('Similarity Score: ' + similarity.toFixed(2) + '%\nTry again, you have not passed!');
         reloadPageAndExecuteDefault(); 
@@ -414,8 +413,19 @@ colors.forEach((col, index) => {
 }
 
 document.getElementById('checkSimilarityButton').addEventListener('click', calculateSimilarity);
+
 function reloadPageAndExecuteDefault() {
-   
+    // Reload the page
+
+    // Perform actions that should happen on page load
+    const canvas = document.getElementById('whiteCanvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    img.onload = function() {
+        ctx.drawImage(img, 0, 0);
+    };
+    img.src = "{{ url_for('static', filename='sketchgrid_banana.png') }}";
+    // showInstructions(); // Example function call from window.onload
 }
 
         function highlightSegmentedRegion(x, y) {
@@ -612,7 +622,6 @@ function checkCorrectColor(x, y, pixelColor) {
             readyButton.onclick = function () {
                 instructionModal.style.display = 'none';
                 alert('Level 1 Recreate Painting unlocked');
-                
             };
             modalButtons.appendChild(readyButton);
         }

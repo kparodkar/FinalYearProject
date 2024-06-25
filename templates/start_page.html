@@ -165,11 +165,54 @@
             position: fixed; /* Adjust positioning method as needed */
             bottom: 55px; /* Adjust distance from the bottom */
             right: 125px; /* Adjust distance from the right */
-        }        
+        }     
+        /* Modal styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0, 0, 0); /* Fallback color */
+            background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+            text-align: center;
+        }
+
+        .modal-button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .modal-button:hover {
+            background-color: #45a049;
+        }
+
+        #instructionText {
+            margin-bottom: 20px;
+        }   
     </style>
 </head>
 <body>
     <div class="container">
+        <div style="position: absolute; top: 40px; right: 40px;">
+            <a href="/modules"><button style="text-decoration: none; background-color: rgb(12, 66, 83); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Back</button></a>
+        </div>
         <p>IMAGE SELECTION</p>
         <p>Improve your digital art creating skills!</p>
     </div>
@@ -184,7 +227,15 @@
         <!-- The image will be dynamically added here -->
     </div>
     <button id="nextButton" class="blueButton1">Next</button>
-
+<!-- Modal Structure -->
+<div id="instructionModal" class="modal">
+    <div class="modal-content">
+        <p id="instructionText"></p>
+        <div id="modalButtons">
+            <!-- Buttons will be dynamically added here -->
+        </div>
+    </div>
+</div>
     <script>
         // Define a global variable to store the response data
         var responseData;
@@ -234,6 +285,58 @@
             // Redirect to the next page with both filename and hex codes as query parameters
             window.location.href = '/page_one?filename=' + filename + '&hex_codes=' + hexCodes2;
         });
+        var instructions = [
+        "1.Click on Choose Image and upload any image from your device.",
+"2.After Choosing the image , click on Select Image.",
+"3.When the image appears, Select 'Next'.",
+            ];
+
+            var currentInstructionIndex = 0;
+    var instructionText = document.getElementById('instructionText');
+    var modalButtons = document.getElementById('modalButtons');
+    var instructionModal = document.getElementById('instructionModal');
+
+    function showInstructions() {
+        instructionModal.style.display = 'block';
+        updateInstruction();
+    }
+
+    function updateInstruction() {
+        instructionText.innerHTML = instructions[currentInstructionIndex];
+        modalButtons.innerHTML = '';
+        if (currentInstructionIndex > 0) {
+            var backButton = document.createElement('button');
+            backButton.innerHTML = 'Back';
+            backButton.classList.add('modal-button');
+            backButton.onclick = function () {
+                currentInstructionIndex--;
+                updateInstruction();
+            };
+            modalButtons.appendChild(backButton);
+        }
+        if (currentInstructionIndex < instructions.length - 1) {
+            var nextButton = document.createElement('button');
+            nextButton.innerHTML = 'Next';
+            nextButton.classList.add('modal-button');
+            nextButton.onclick = function () {
+                currentInstructionIndex++;
+                updateInstruction();
+            };
+            modalButtons.appendChild(nextButton);
+        } else {
+            var readyButton = document.createElement('button');
+            readyButton.innerHTML = 'I am ready';
+            readyButton.classList.add('modal-button');
+            readyButton.onclick = function () {
+                instructionModal.style.display = 'none';
+                alert('Selection of Image stage unlocked! ');
+            };
+            modalButtons.appendChild(readyButton);
+        }
+    }
+
+    // Show instructions on page load
+    window.onload = showInstructions;
     </script>
 </body>
 </html>

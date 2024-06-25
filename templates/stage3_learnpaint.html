@@ -22,6 +22,7 @@
             text-align: center;
             position: relative;
             margin-left: 55px;
+            
         }
         .colorSquare {
             width: 150px;
@@ -134,9 +135,9 @@
             margin-bottom: 20px;
         }
         #targetColorLabel {
-            position: absolute;
+            position:absolute;
             left: 129px;
-            top: 191px; /* Adjust as necessary to position above the box */
+            top: 250px; /* Adjust as necessary to position above the box */
             font-weight: bold;
             font-size: 18px;
         }
@@ -165,6 +166,9 @@
 </head>
 <body>
     <div id="container">
+        <div style="position: absolute; top: -100px; right: -300px;">
+            <a href="/mixingcolors"><button style="text-decoration: none; background-color: rgb(12, 66, 83); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Back</button></a>
+        </div>
         <div id="colorbox1label">Color 1</div>
         <div id="colorBox1"></div>
         <div id="colorbox2label">Color 2</div>
@@ -174,18 +178,18 @@
         <h3>Click on a color from the palette to select:</h3>
         <div id="colorPalette" class="palette" style="margin-right:-65px">
             <!-- Loop through the colors and create circles -->
-            <div class="color-circle" style="background-color: #FF5733;" onclick="showPopup('#FF5733')"></div>
-            <div class="color-circle" style="background-color: #33FF57;" onclick="showPopup('#33FF57')"></div>
-            <div class="color-circle" style="background-color: #5733FF;" onclick="showPopup('#5733FF')"></div>
-            <div class="color-circle" style="background-color: #FFD133;" onclick="showPopup('#FFD133')"></div>
-            <div class="color-circle" style="background-color: #33FFF5;" onclick="showPopup('#33FFF5')"></div>
-            <div class="color-circle" style="background-color: #F533FF;" onclick="showPopup('#F533FF')"></div>
-            <div class="color-circle" style="background-color: #33FFAA;" onclick="showPopup('#33FFAA')"></div>
-            <div class="color-circle" style="background-color: #AA33FF;" onclick="showPopup('#AA33FF')"></div>
-            <div class="color-circle" style="background-color: #FFAA33;" onclick="showPopup('#FFAA33')"></div>
-            <div class="color-circle" style="background-color: #AAFF33;" onclick="showPopup('#AAFF33')"></div>
-            <div class="color-circle" style="background-color: #33FF57;" onclick="showPopup('#33FF57')"></div>
-            <div class="color-circle" style="background-color: #5733FF;" onclick="showPopup('#5733FF')"></div>
+            <div class="color-circle" style="background-color: #FFFF00;" onclick="showPopup('#FFFF00')"></div>
+            <div class="color-circle" style="background-color: #FFA500;" onclick="showPopup('#FFA500')"></div>
+            <div class="color-circle" style="background-color: #013220;" onclick="showPopup('#013220')"></div>
+            <div class="color-circle" style="background-color: #39FF14;" onclick="showPopup('#39FF14')"></div>
+            <div class="color-circle" style="background-color: #FF0000;" onclick="showPopup('#FF0000')"></div>
+            <div class="color-circle" style="background-color: #FF007F;" onclick="showPopup('#FF007F')"></div>
+            <div class="color-circle" style="background-color: #1dacd6;" onclick="showPopup('#1dacd6')"></div>
+            <div class="color-circle" style="background-color: #8F00FF;" onclick="showPopup('#8F00FF')"></div>
+            <div class="color-circle" style="background-color: #03045E;" onclick="showPopup('#03045E')"></div>
+            <div class="color-circle" style="background-color: #FFDBAC;" onclick="showPopup('#FFDBAC')"></div>
+            <div class="color-circle" style="background-color: #808000;" onclick="showPopup('#808000')"></div>
+            <div class="color-circle" style="background-color: #964B00;" onclick="showPopup('#964B00')"></div>
         </div>
         <button onclick="mixColors()" style=" padding: 5px 10px; /* Adjust padding to increase button size */
     
@@ -312,14 +316,27 @@
             } else {
                 // Display Try again popup
                 alert('Similarity Score: ' + similarityPercentage.toFixed(2) + '%\nTry again, you have not passed');
-        
+                
                 // Clear the score
                 document.getElementById('similarityResult').style.display = 'none';
+                reloadPageAndExecuteDefault(); 
                 // Reset the page
                 
             }
         }
+        function reloadPageAndExecuteDefault() {
+    // Reload the page
 
+    // Perform actions that should happen on page load
+    const canvas = document.getElementById('whiteCanvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    img.onload = function() {
+        ctx.drawImage(img, 0, 0);
+    };
+    img.src = "{{ url_for('static', filename='sketchgrid_banana.png') }}";
+    // showInstructions(); // Example function call from window.onload
+}
         function parseColor(color) {
             var match = color.match(/rgb\((\d+), (\d+), (\d+)\)/);
             if (match) {
@@ -379,7 +396,7 @@
             return Math.sqrt(delta_l * delta_l + delta_a * delta_a + delta_b * delta_b);
         }
 
-        var colors = ['#d92809', '#e65512', '#ad6f03', '#56d62b', '#64babd', '#071a4a', '#cf51af'];
+        var colors = ['#ab7378', '#657451', '#cd6544', '#95acd2', '#64babd', '#9ea863'];
 
         // Set the random color when the page loads
         // window.onload = function() {
