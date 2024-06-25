@@ -142,18 +142,18 @@
 
     <div id="colorPalette" class="palette" style="margin-left: 30px;">
         <!-- Loop through the colors and create circles -->
-        <div class="color-circle" style="background-color: #FFB6C1;" onclick="setColor('#FFB6C1')"></div>
-        <div class="color-circle" style="background-color: #006400;" onclick="setColor('#006400')"></div>
-        <div class="color-circle" style="background-color: #ED7014;" onclick="setColor('#ED7014')"></div>
-        <div class="color-circle" style="background-color: #A020F0;" onclick="setColor('#A020F0')"></div>
-        <div class="color-circle" style="background-color: #FF0000;" onclick="setColor('#FF0000')"></div>
-        <div class="color-circle" style="background-color: #FFE5B4;" onclick="setColor('#FFE5B4')"></div>
         <div class="color-circle" style="background-color: #FFFF00;" onclick="setColor('#FFFF00')"></div>
-        <div class="color-circle" style="background-color: #90EE90;" onclick="setColor('#90EE90')"></div>
-        <div class="color-circle" style="background-color: #00008B;" onclick="setColor('#00008B')"></div>
-        <div class="color-circle" style="background-color: #ADD8E6;" onclick="setColor('#ADD8E6')"></div>
-        <div class="color-circle" style="background-color: #964B00;" onclick="setColor('#964B00')"></div>
-        <div class="color-circle" style="background-color: #000000;" onclick="setColor('#000000')"></div>
+            <div class="color-circle" style="background-color: #FFA500;" onclick="setColor('#FFA500')"></div>
+            <div class="color-circle" style="background-color: #013220;" onclick="setColor('#013220')"></div>
+            <div class="color-circle" style="background-color: #39FF14;" onclick="setColor('#39FF14')"></div>
+            <div class="color-circle" style="background-color: #FF0000;" onclick="setColor('#FF0000')"></div>
+            <div class="color-circle" style="background-color: #FF007F;" onclick="setColor('#FF007F')"></div>
+            <div class="color-circle" style="background-color: #1dacd6;" onclick="setColor('#1dacd6')"></div>
+            <div class="color-circle" style="background-color: #8F00FF;" onclick="setColor('#8F00FF')"></div>
+            <div class="color-circle" style="background-color: #03045E;" onclick="setColor('#03045E')"></div>
+            <div class="color-circle" style="background-color: #FFDBAC;" onclick="setColor('#FFDBAC')"></div>
+            <div class="color-circle" style="background-color: #808000;" onclick="setColor('#808000')"></div>
+            <div class="color-circle" style="background-color: #964B00;" onclick="setColor('#964B00')"></div>
     </div></div>
     <div class="label">Target Color</div>
 
@@ -281,7 +281,7 @@ drawLabels();
     }
     initializeCanvas();
     function displayRandomColors() {
-        var randomColors = ['#A020F0', '#0D98BA', '#adff2f'];
+        var randomColors = ['#2bd675', '#808766', '#4f966b'];
         var randomColor = randomColors[Math.floor(Math.random() * randomColors.length)];
         randomCtx.fillStyle = randomColor;
         randomCtx.fillRect(150, 10, 100, 40); //  ctx.strokeRect(50, 50, 100, 100)

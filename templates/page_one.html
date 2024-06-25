@@ -416,36 +416,47 @@
         });
         let paintedPixels = [];
         function enableBrushDrawing(drawCanvas, drawCtx, processedCanvas, processedCtx) {
-            let painting = false;
-            let brushSize = document.getElementById('brushSizeSlider').value;
-        
-            function startPosition(e) {
-                painting = true;
-                draw(e);
-            }
-        
-            function endPosition() {
-                painting = false;
-                drawCtx.beginPath();
-            }
-        
-            function draw(e) {
-                if (!painting) return;
-                brushSize = document.getElementById('brushSizeSlider').value;
-                drawCtx.lineWidth = brushSize;
-                drawCtx.lineCap = 'round';
-                const brushType = document.querySelector('input[name="brush"]:checked').value;
-                const fanBrushAngle = document.getElementById('fanBrushAngleSlider').value;
-                
-                const rect = drawCanvas.getBoundingClientRect();
-                const mouseX = e.clientX - rect.left;
-                const mouseY = e.clientY - rect.top;
-                
-                paintedPixels.push({ x: mouseX, y: mouseY });
+  let painting = false;
+  let brushSize = document.getElementById('brushSizeSlider').value;
 
-// Update similarity score calculation
-const similarity = calculateSimilarity(drawCanvas, processedCanvas);
-updateSimilarityUI(similarity);
+  function startPosition(e) {
+    painting = true;
+    draw(e);
+  }
+
+  function endPosition() {
+    painting = false;
+    drawCtx.beginPath();
+  }
+
+  function draw(e) {
+    if (!painting) return;
+    brushSize = document.getElementById('brushSizeSlider').value;
+    drawCtx.lineWidth = brushSize;
+    drawCtx.lineCap = 'round';
+    const brushType = document.querySelector('input[name="brush"]:checked').value;
+    const fanBrushAngle = document.getElementById('fanBrushAngleSlider').value;
+
+    const rect = drawCanvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    paintedPixels.push({ x: mouseX, y: mouseY });
+
+    // Get the color of the pixel at the current coordinate on the original image
+    const originalImageData = processedCtx.getImageData(mouseX, mouseY, 1, 1);
+    const originalColor = originalImageData.data;
+
+    // Get the color of the pixel at the current coordinate on the painted canvas
+    const drawImageData = drawCtx.getImageData(mouseX, mouseY, 1, 1);
+    const drawColor = drawImageData.data;
+
+    // Calculate the similarity between the two colors
+    const similarity = calculateColorSimilarity(originalColor, drawColor);
+
+    // Update the similarity score UI
+    updateSimilarityUI(similarity);
+
                 if (brushType === 'round_brush') {
                     drawCtx.strokeStyle = selectedColor;
                     drawCtx.lineTo(mouseX, mouseY);
@@ -589,73 +600,16 @@ updateSimilarityUI(similarity);
             }
             return null;
         }
-     // Function to calculate similarity between two canvas images
-     function calculateSimilarity(drawCanvas, processedCanvas) {
-    const drawCtx = drawCanvas.getContext('2d');
-    const processedCtx = processedCanvas.getContext('2d');
+    function calculateColorSimilarity(color1, color2) {
+  const diffR = Math.abs(color1[0] - color2[0]);
+  const diffG = Math.abs(color1[1] - color2[1]);
+  const diffB = Math.abs(color1[2] - color2[2]);
 
-    // Get image data from both canvases
-    const drawImageData = drawCtx.getImageData(0, 0, drawCanvas.width, drawCanvas.height);
-    const processedImageData = processedCtx.getImageData(0, 0, processedCanvas.width, processedCanvas.height);
+  const totalDiff = diffR + diffG + diffB;
 
-    const drawData = drawImageData.data;
-    const processedData = processedImageData.data;
+  const similarity = (1 - (totalDiff / 765)) * 100;
 
-    // Convert image data to grayscale
-    const drawGray = toGrayscale(drawData, drawCanvas.width, drawCanvas.height);
-    const processedGray = toGrayscale(processedData, processedCanvas.width, processedCanvas.height);
-
-    // Compute SSIM between the two grayscale images
-    const ssimValue = computeSSIM(drawGray, processedGray, drawCanvas.width, drawCanvas.height);
-    
-    // Return SSIM value as percentage
-    return (ssimValue * 10000).toFixed(1);
-}
-
-function toGrayscale(imageData, width, height) {
-    const grayData = new Float32Array(width * height);
-
-    for (let i = 0; i < imageData.length; i += 4) {
-        const r = imageData[i];
-        const g = imageData[i + 1];
-        const b = imageData[i + 2];
-        // Luminance calculation
-        grayData[i / 4] = 0.299 * r + 0.587 * g + 0.114 * b;
-    }
-
-    return grayData;
-}
-
-function computeSSIM(img1, img2, width, height) {
-    const C1 = 6.5025;
-    const C2 = 58.5225;
-    
-    let mu1 = 0, mu2 = 0, sigma1_sq = 0, sigma2_sq = 0, sigma12 = 0;
-
-    const totalPixels = width * height;
-
-    for (let i = 0; i < totalPixels; i++) {
-        mu1 += img1[i];
-        mu2 += img2[i];
-    }
-    
-    mu1 /= totalPixels;
-    mu2 /= totalPixels;
-
-    for (let i = 0; i < totalPixels; i++) {
-        sigma1_sq += Math.pow(img1[i] - mu1, 2);
-        sigma2_sq += Math.pow(img2[i] - mu2, 2);
-        sigma12 += (img1[i] - mu1) * (img2[i] - mu2);
-    }
-    
-    sigma1_sq /= totalPixels - 1;
-    sigma2_sq /= totalPixels - 1;
-    sigma12 /= totalPixels - 1;
-
-    const ssim = ((2 * mu1 * mu2 + C1) * (2 * sigma12 + C2)) /
-                 ((Math.pow(mu1, 2) + Math.pow(mu2, 2) + C1) * (sigma1_sq + sigma2_sq + C2));
-
-    return ssim;
+  return similarity.toFixed(1);
 }
 
 // Function to update similarity score UI

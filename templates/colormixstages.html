@@ -144,20 +144,21 @@
             <a href="/mixingcolors"><button style="text-decoration: none; background-color: rgb(12, 66, 83); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Back</button></a>
         </div>
         <h3>Click on a color from the palette to select:</h3>
-        <div id="colorPalette" class="palette">
+        <div id="colorPalette" class="palette">                          
+            <!-- '#FFFF00', '#FFA500', '#013220', '#39FF14' -->
             <!-- Loop through the colors and create circles -->
-            <div class="color-circle" style="background-color: #FF5733;" onclick="showPopup('#FF5733')"></div>
-            <div class="color-circle" style="background-color: #33FF57;" onclick="showPopup('#33FF57')"></div>
-            <div class="color-circle" style="background-color: #5733FF;" onclick="showPopup('#5733FF')"></div>
-            <div class="color-circle" style="background-color: #FFD133;" onclick="showPopup('#FFD133')"></div>
-            <div class="color-circle" style="background-color: #33FFF5;" onclick="showPopup('#33FFF5')"></div>
-            <div class="color-circle" style="background-color: #F533FF;" onclick="showPopup('#F533FF')"></div>
-            <div class="color-circle" style="background-color: #33FFAA;" onclick="showPopup('#33FFAA')"></div>
-            <div class="color-circle" style="background-color: #AA33FF;" onclick="showPopup('#AA33FF')"></div>
-            <div class="color-circle" style="background-color: #FFAA33;" onclick="showPopup('#FFAA33')"></div>
-            <div class="color-circle" style="background-color: #AAFF33;" onclick="showPopup('#AAFF33')"></div>
-            <div class="color-circle" style="background-color: #33FF57;" onclick="showPopup('#33FF57')"></div>
-            <div class="color-circle" style="background-color: #5733FF;" onclick="showPopup('#5733FF')"></div>
+            <div class="color-circle" style="background-color: #FFFF00;" onclick="showPopup('#FFFF00')"></div>
+            <div class="color-circle" style="background-color: #FFA500;" onclick="showPopup('#FFA500')"></div>
+            <div class="color-circle" style="background-color: #013220;" onclick="showPopup('#013220')"></div>
+            <div class="color-circle" style="background-color: #39FF14;" onclick="showPopup('#39FF14')"></div>
+            <div class="color-circle" style="background-color: #FF0000;" onclick="showPopup('#FF0000')"></div>
+            <div class="color-circle" style="background-color: #FF007F;" onclick="showPopup('#FF007F')"></div>
+            <div class="color-circle" style="background-color: #1dacd6;" onclick="showPopup('#1dacd6')"></div>
+            <div class="color-circle" style="background-color: #8F00FF;" onclick="showPopup('#8F00FF')"></div>
+            <div class="color-circle" style="background-color: #03045E;" onclick="showPopup('#03045E')"></div>
+            <div class="color-circle" style="background-color: #FFDBAC;" onclick="showPopup('#FFDBAC')"></div>
+            <div class="color-circle" style="background-color: #808000;" onclick="showPopup('#808000')"></div>
+            <div class="color-circle" style="background-color: #964B00;" onclick="showPopup('#964B00')"></div>
         </div>
         <button onclick="checkSimilarity()" style="    padding: 5px 10px; /* Adjust padding to increase button size */
     
@@ -355,7 +356,7 @@
         }
 
         // Set the provided colors for random generation
-        var colors = ['#d92809', '#e65512', '#ad6f03', '#56d62b', '#64babd', '#071a4a', '#cf51af'];
+        var colors = ['#EE0943',  '#666600', '#386373', '#DD3F4E', '#FEE469'];
 
         // Set the random color when the page loads
         var randomIndex = Math.floor(Math.random() * colors.length);
