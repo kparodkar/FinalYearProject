@@ -397,7 +397,15 @@ colors.forEach((col, index) => {
 
     if (similarity >= 75) {
         alert('Similarity Score: ' + similarity.toFixed(2) + '%\nCongratulations, you have unlocked the next level!');
-        window.location.href = "/recreatepainting";
+        if(similarity<88){
+            let str=prompt('Want to improve score?Yes/No');
+            if(str.toLowerCase() === "yes")
+            document.getElementById('checkSimilarityButton').addEventListener('click', calculateSimilarity);
+             else{
+              alert('Thank you! You did great job! ');
+                window.location.href = "/recreatepainting";  }
+        }
+
     } else {
         alert('Similarity Score: ' + similarity.toFixed(2) + '%\nTry again, you have not passed!');
         reloadPageAndExecuteDefault(); 
@@ -407,24 +415,8 @@ colors.forEach((col, index) => {
 
 document.getElementById('checkSimilarityButton').addEventListener('click', calculateSimilarity);
 function reloadPageAndExecuteDefault() {
-    // Reload the page
-
-    // Perform actions that should happen on page load
-    const canvas = document.getElementById('whiteCanvas');
-    const ctx = canvas.getContext('2d');
-    const img = new Image();
-    img.onload = function() {
-        ctx.drawImage(img, 0, 0);
-    };
-    img.src = "{{ url_for('static', filename='sketchgrid_banana.png') }}";
-    // showInstructions(); // Example function call from window.onload
+   
 }
-function clearCanvas() {
-    const canvas = document.getElementById('myCanvas');
-    const context = canvas.getContext('2d');
-    context.clearRect(0, 0, canvas.width, canvas.height);
-}
-
 
         function highlightSegmentedRegion(x, y) {
     if (!segmentedImgData) return;

@@ -600,18 +600,14 @@
             }
             return null;
         }
-    function calculateColorSimilarity(color1, color2) {
-  const diffR = Math.abs(color1[0] - color2[0]);
-  const diffG = Math.abs(color1[1] - color2[1]);
-  const diffB = Math.abs(color1[2] - color2[2]);
+        function calculateColorSimilarity(color1, color2) {
+  const rDiff = Math.abs(color1[0] - color2[0]);
+  const gDiff = Math.abs(color1[1] - color2[1]);
+  const bDiff = Math.abs(color1[2] - color2[2]);
 
-  const totalDiff = diffR + diffG + diffB;
-
-  const similarity = (1 - (totalDiff / 765)) * 100;
-
-  return similarity.toFixed(1);
+  const similarity = 1 - (rDiff + gDiff + bDiff) / (3 * 255);
+  return similarity * 100;
 }
-
 // Function to update similarity score UI
 function updateSimilarityUI(similarity) {
     const similarityElement = document.getElementById('similarityScore');
