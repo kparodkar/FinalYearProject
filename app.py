@@ -1,3 +1,4 @@
+#all imports
 import webview 
 from flask import Flask, render_template, request, redirect, session
 import mysql.connector
