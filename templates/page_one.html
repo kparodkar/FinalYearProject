@@ -661,10 +661,9 @@ function updateSimilarityUI(similarity) {
   const similarityElement = document.getElementById('similarityScore');
   similarityElement.textContent = `Similarity: ${similarity.toFixed(2)}%`;
 }
-// Function to update similarity score UI
 function updateSimilarityUI(similarity) {
     const similarityElement = document.getElementById('similarityScore');
-    similarityElement.textContent = `Similarity: ${similarity}%`;
+    similarityElement.textContent = `Similarity: ${Math.max(0, Math.min(100, similarity.toFixed(2)))}%`;
 }
 var instructions = [
         "1. The selected image from your device is displayed in the top left. ",
